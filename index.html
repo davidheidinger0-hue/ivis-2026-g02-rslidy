@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My First Rslidy Presentation</title>
+    
     <link rel="stylesheet" href="rslidy.css" />
     <script type="module" src="rslidy.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,62 +31,75 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup the fake data
-            const years = Array.from({length: 50}, (_, i) => 1970 + i);
-            const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
             
-            const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
-                const year = years[index];
-                if (year >= 1998 && year <= 2008) return temp; 
-                return null;
-            });
+            // Rslidy moves DOM elements upon initialization, which clears canvas states.
+            // We must wait for Rslidy to finish its setup before drawing the Chart.
+            function initChart() {
+                if (!window.rslidy || !window.rslidy.running) {
+                    setTimeout(initChart, 50); // Check again in 50ms
+                    return;
+                }
 
-            const ctx = document.getElementById('climateChart').getContext('2d');
-            
-            // Draw the chart immediately
-            window.myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: years,
-                    datasets: [{
-                        label: 'Temperature Anomaly',
-                        data: fullTemperatures,
-                        borderColor: 'red',
-                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        spanGaps: true
-                    }]
-                },
-                options: {
-                    responsive: false, // <--- THIS STOPS THE SCROLLING BUG
-                    maintainAspectRatio: false,
-                    animation: false, // Turn off animation to ensure instant rendering
-                    scales: {
-                        y: {
-                            min: -0.5,
-                            max: 1.5,
-                            title: { display: true, text: 'Temperature Change (°C)' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Year' }
+                // Setup the fake data
+                const years = Array.from({length: 50}, (_, i) => 1970 + i);
+                const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
+                
+                const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
+                    const year = years[index];
+                    if (year >= 1998 && year <= 2008) return temp; 
+                    return null;
+                });
+
+                const ctx = document.getElementById('climateChart').getContext('2d');
+                
+                // Draw the chart
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Temperature Anomaly',
+                            data: fullTemperatures,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: false, // Stops the scrolling bug
+                        maintainAspectRatio: false,
+                        animation: false, // Turn off animation to ensure instant rendering
+                        scales: {
+                            y: {
+                                min: -0.5,
+                                max: 1.5,
+                                title: { display: true, text: 'Temperature Change (°C)' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Year' }
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            // Button functions
-            window.showFullTrend = function() {
-                window.myChart.data.datasets[0].data = fullTemperatures;
-                window.myChart.data.datasets[0].borderColor = 'red';
-                window.myChart.update();
-            };
+                // Button functions
+                window.showFullTrend = function() {
+                    window.myChart.data.datasets[0].data = fullTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'red';
+                    window.myChart.update();
+                };
 
-            window.showCherryPicked = function() {
-                window.myChart.data.datasets[0].data = cherryPickedTemperatures;
-                window.myChart.data.datasets[0].borderColor = 'blue';
-                window.myChart.update();
-            };
+                window.showCherryPicked = function() {
+                    window.myChart.data.datasets[0].data = cherryPickedTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'blue';
+                    window.myChart.update();
+                };
+            }
+
+            // Start the initialization check
+            initChart();
         });
     </script>
 
