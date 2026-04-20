@@ -31,13 +31,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Rslidy moves DOM elements upon initialization, which clears canvas states.
-            // We must wait for Rslidy to finish its setup before drawing the Chart.
-            function initChart() {
-                if (!window.rslidy || !window.rslidy.running) {
-                    setTimeout(initChart, 50); // Check again in 50ms
-                    return;
-                }
+            setTimeout(() => {
+                initChart();
+            }, 200);
 
                 // Setup the fake data
                 const years = Array.from({length: 50}, (_, i) => 1970 + i);
