@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Rslidy Presentation</title> 
+    <title>Dishonest Chart Techniques</title> 
     <link rel="stylesheet" href="rslidy.css" />
     <script type="module" src="rslidy.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,12 +11,26 @@
 <body>
 
     <section>
-        <h1>Dishonest chart techniques example using Rslidy</h1>
-        <p>Press the right arrow key to go to the next slide.</p>
+        <div style="text-align: center; padding-top: 10%;">
+            <h1 style="font-size: 3em; margin-bottom: 0.2em;">Dishonest Chart Techniques</h1>
+            <h2>Group 2: Lukas Auer, David Heidinger, Nina Tschikof and Christina Vogel</h2>
+            <p>22 Apr 2026<br>Information Visualisation SS 2026</p>
+            
+            <p style="font-size: 0.7em; margin-top: 4em; color: #555;">
+                Copyright 2026 by the author(s), except as otherwise noted.<br>
+                This work is placed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence.
+            </p>
+        </div>
     </section>
 
     <section>
-        <h1>Rslidy example: Cherry Picking</h1>
+        <div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+            <h1 style="font-size: 4em;">Examples</h1>
+        </div>
+    </section>
+
+    <section>
+        <h1>2. Cherry Picking Data</h1>
         
         <div style="width: 800px; height: 400px; margin: 0 auto; overflow: hidden;">
             <canvas id="climateChart" width="800" height="400"></canvas>
@@ -94,13 +108,12 @@
                 }
             };
 
-            // 4. The Fix: Wait until the canvas is actually visible on screen to draw it
+            // 4. Wait until the canvas is actually visible on screen to draw it
             const canvas = document.getElementById('climateChart');
             const observer = new IntersectionObserver((entries) => {
-                // When the user navigates to the slide and the canvas is seen...
                 if (entries[0].isIntersecting) {
-                    drawChart();             // Draw the chart!
-                    observer.disconnect();   // Stop watching so it doesn't redraw endlessly
+                    drawChart();             
+                    observer.disconnect();   
                 }
             });
             
