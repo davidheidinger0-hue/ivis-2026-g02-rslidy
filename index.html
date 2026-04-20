@@ -12,12 +12,13 @@
 
     <section>
         <h1>Dishonest chart techniques example using Rslidy</h1>
+        <p>Press the right arrow key to go to the next slide.</p>
     </section>
 
     <section>
         <h1>Rslidy example: Cherry Picking</h1>
         
-        <div style="width: 80%; height: 400px; margin: 0 auto; position: relative;">
+        <div style="position: relative; width: 80vw; height: 50vh; margin: 0 auto;">
             <canvas id="climateChart"></canvas>
         </div>
         
@@ -29,6 +30,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 1. Setup the data
             const years = Array.from({length: 50}, (_, i) => 1970 + i);
             const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
             
@@ -38,45 +40,66 @@
                 return null;
             });
 
-            const ctx = document.getElementById('climateChart').getContext('2d');
-            
-            window.myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: years,
-                    datasets: [{
-                        label: 'Temperature Anomaly',
-                        data: fullTemperatures,
-                        borderColor: 'red',
-                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        spanGaps: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // FIX 3: Forces Chart.js to respect the 400px height
-                    scales: {
-                        y: {
-                            min: -0.5,
-                            max: 1.5,
-                            title: { display: true, text: 'Temperature Change (°C)' }
+            const canvas = document.getElementById('climateChart');
+            let chartInitialized = false;
+
+            // 2. Wrap the chart creation in a function so we can delay it
+            function createChart() {
+                if (chartInitialized) return; // Prevent drawing it twice
+                
+                const ctx = canvas.getContext('2d');
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Temperature Anomaly',
+                            data: fullTemperatures,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1500 // Add a nice load animation when they arrive at the slide
                         },
-                        x: {
-                            title: { display: true, text: 'Year' }
+                        scales: {
+                            y: { min: -0.5, max: 1.5, title: { display: true, text: 'Temperature Change (°C)' } },
+                            x: { title: { display: true, text: 'Year' } }
                         }
                     }
+                });
+                
+                chartInitialized = true;
+            }
+
+            // 3. The Magic Fix: The Intersection Observer
+            // This watches the canvas. If it becomes visible on the screen, it runs createChart()
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    createChart();
+                    observer.disconnect(); // Stop watching once the chart is built
                 }
             });
 
+            // Start watching the canvas
+            observer.observe(canvas);
+
+            // 4. Button functions
             window.showFullTrend = function() {
+                if(!window.myChart) return;
                 window.myChart.data.datasets[0].data = fullTemperatures;
                 window.myChart.data.datasets[0].borderColor = 'red';
                 window.myChart.update();
             };
 
             window.showCherryPicked = function() {
+                if(!window.myChart) return;
                 window.myChart.data.datasets[0].data = cherryPickedTemperatures;
                 window.myChart.data.datasets[0].borderColor = 'blue';
                 window.myChart.update();
