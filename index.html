@@ -29,65 +29,84 @@
     </section>
 
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    // Setup the data
-    const years = Array.from({length: 50}, (_, i) => 1970 + i);
-    const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
-    
-    const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
-        const year = years[index];
-        if (year >= 1998 && year <= 2008) return temp; 
-        return null;
-    });
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. Setup the data
+            const years = Array.from({length: 50}, (_, i) => 1970 + i);
+            const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
+            
+            const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
+                const year = years[index];
+                if (year >= 1998 && year <= 2008) return temp; 
+                return null;
+            });
 
-    const ctx = document.getElementById('climateChart').getContext('2d');
-    
-    // Draw the chart
-    window.myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: years,
-            datasets: [{
-                label: 'Temperature Anomaly',
-                data: fullTemperatures,
-                borderColor: 'red',
-                backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                borderWidth: 2,
-                tension: 0.3,
-                spanGaps: true
-            }]
-        },
-        options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            animation: false,
-            scales: {
-                y: {
-                    min: -0.5,
-                    max: 1.5,
-                    title: { display: true, text: 'Temperature Change (°C)' }
-                },
-                x: {
-                    title: { display: true, text: 'Year' }
-                }
+            // 2. Wrap the chart drawing logic inside a function
+            function drawChart() {
+                const ctx = document.getElementById('climateChart').getContext('2d');
+                
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Temperature Anomaly',
+                            data: fullTemperatures,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            y: {
+                                min: -0.5,
+                                max: 1.5,
+                                title: { display: true, text: 'Temperature Change (°C)' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Year' }
+                            }
+                        }
+                    }
+                });
             }
-        }
-    });
 
-    // Button functions attached to window so HTML onclick can find them
-    window.showFullTrend = function() {
-        window.myChart.data.datasets[0].data = fullTemperatures;
-        window.myChart.data.datasets[0].borderColor = 'red';
-        window.myChart.update();
-    };
+            // 3. Setup Button functions
+            window.showFullTrend = function() {
+                if (window.myChart) {
+                    window.myChart.data.datasets[0].data = fullTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'red';
+                    window.myChart.update();
+                }
+            };
 
-    window.showCherryPicked = function() {
-        window.myChart.data.datasets[0].data = cherryPickedTemperatures;
-        window.myChart.data.datasets[0].borderColor = 'blue';
-        window.myChart.update();
-    };
-});
-</script>
+            window.showCherryPicked = function() {
+                if (window.myChart) {
+                    window.myChart.data.datasets[0].data = cherryPickedTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'blue';
+                    window.myChart.update();
+                }
+            };
+
+            // 4. The Fix: Wait until the canvas is actually visible on screen to draw it
+            const canvas = document.getElementById('climateChart');
+            const observer = new IntersectionObserver((entries) => {
+                // When the user navigates to the slide and the canvas is seen...
+                if (entries[0].isIntersecting) {
+                    drawChart();             // Draw the chart!
+                    observer.disconnect();   // Stop watching so it doesn't redraw endlessly
+                }
+            });
+            
+            if (canvas) observer.observe(canvas);
+        });
+    </script>
 
 </body>
 </html>
