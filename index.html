@@ -8,9 +8,13 @@
     <script type="module" src="rslidy.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="slidein">
-    
-<section>
+<body>
+
+    <section>
+        <h1>Dishonest chart techniques example using Rslidy</h1>
+    </section>
+
+    <section>
         <h1>Rslidy example: Cherry Picking</h1>
         
         <div style="width: 80%; margin: 0 auto;">
@@ -23,61 +27,61 @@
         </div>
 
         <script>
-            // Setup fake temperature data (Upward trend + random noise)
-            const years = Array.from({length: 50}, (_, i) => 1970 + i);
-            const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
-            
-            // Identify a "cherry-picked" flat/downward segment
-            // We'll hide the rest of the data by setting it to 'null'
-            const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
-                const year = years[index];
-                if (year >= 1998 && year <= 2008) return temp; 
-                return null;
-            });
+            // Wait for the slide to load before drawing the chart
+            document.addEventListener('DOMContentLoaded', function() {
+                const years = Array.from({length: 50}, (_, i) => 1970 + i);
+                const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
+                
+                const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
+                    const year = years[index];
+                    if (year >= 1998 && year <= 2008) return temp; 
+                    return null;
+                });
 
-            // Initialize the Chart
-            const ctx = document.getElementById('climateChart').getContext('2d');
-            const myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: years,
-                    datasets: [{
-                        label: 'Temperature Anomaly',
-                        data: fullTemperatures,
-                        borderColor: 'red',
-                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3, // Adds a slight curve to the line
-                        spanGaps: true // Connects the line if data is missing
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            min: -0.5,
-                            max: 1.5,
-                            title: { display: true, text: 'Temperature Change (°C)' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Year' }
+                const ctx = document.getElementById('climateChart').getContext('2d');
+                // Make myChart a global variable so the buttons can access it
+                window.myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: 'Temperature Anomaly',
+                            data: fullTemperatures,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            spanGaps: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                min: -0.5,
+                                max: 1.5,
+                                title: { display: true, text: 'Temperature Change (°C)' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Year' }
+                            }
                         }
                     }
-                }
+                });
+
+                // Attach functions to the window so the inline onclick buttons can find them
+                window.showFullTrend = function() {
+                    window.myChart.data.datasets[0].data = fullTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'red';
+                    window.myChart.update();
+                };
+
+                window.showCherryPicked = function() {
+                    window.myChart.data.datasets[0].data = cherryPickedTemperatures;
+                    window.myChart.data.datasets[0].borderColor = 'blue';
+                    window.myChart.update();
+                };
             });
-
-            // Functions to update the chart when buttons are clicked
-            function showFullTrend() {
-                myChart.data.datasets[0].data = fullTemperatures;
-                myChart.data.datasets[0].borderColor = 'red';
-                myChart.update();
-            }
-
-            function showCherryPicked() {
-                myChart.data.datasets[0].data = cherryPickedTemperatures;
-                myChart.data.datasets[0].borderColor = 'blue';
-                myChart.update();
-            }
         </script>
     </section>
 
