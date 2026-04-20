@@ -6,21 +6,79 @@
     <title>My First Rslidy Presentation</title>
     <link rel="stylesheet" href="rslidy.css" />
     <script type="module" src="rslidy.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="slidein">
     
-    <section>
-        <h1>Welcome to my Presentation</h1>
-        <p>This is my very first slide using Rslidy!</p>
-    </section>
+<section>
+        <h1>Rslidy example: Cherry Picking</h1>
+        
+        <div style="width: 80%; margin: 0 auto;">
+            <canvas id="climateChart"></canvas>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="showFullTrend()" style="padding: 10px; font-size: 16px; cursor: pointer;">Show Full Trend (Reality)</button>
+            <button onclick="showCherryPicked()" style="padding: 10px; font-size: 16px; cursor: pointer; background-color: #ffcccc;">Cherry Pick (Misleading)</button>
+        </div>
 
-    <section>
-        <h1>My Second Slide</h1>
-        <ul class="rslidy-incremental">
-            <li>First point (click to reveal next)</li>
-            <li>Second point</li>
-            <li>Third point</li>
-        </ul>
+        <script>
+            // 1. Setup some fake temperature data (Upward trend + random noise)
+            const years = Array.from({length: 50}, (_, i) => 1970 + i);
+            const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
+            
+            // 2. Identify a "cherry-picked" flat/downward segment (e.g., years 1998 to 2008)
+            // We'll hide the rest of the data by setting it to 'null'
+            const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
+                const year = years[index];
+                if (year >= 1998 && year <= 2008) return temp; 
+                return null;
+            });
+
+            // 3. Initialize the Chart
+            const ctx = document.getElementById('climateChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Temperature Anomaly',
+                        data: fullTemperatures,
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3, // Adds a slight curve to the line
+                        spanGaps: true // Connects the line if data is missing
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            min: -0.5,
+                            max: 1.5,
+                            title: { display: true, text: 'Temperature Change (°C)' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Year' }
+                        }
+                    }
+                }
+            });
+
+            // 4. Functions to update the chart when buttons are clicked
+            function showFullTrend() {
+                myChart.data.datasets[0].data = fullTemperatures;
+                myChart.data.datasets[0].borderColor = 'red';
+                myChart.update();
+            }
+
+            function showCherryPicked() {
+                myChart.data.datasets[0].data = cherryPickedTemperatures;
+                myChart.data.datasets[0].borderColor = 'blue';
+                myChart.update();
+            }
+        </script>
     </section>
 
 </body>
