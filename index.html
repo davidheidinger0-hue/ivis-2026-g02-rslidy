@@ -23,11 +23,11 @@
         </div>
 
         <script>
-            // 1. Setup some fake temperature data (Upward trend + random noise)
+            // Setup fake temperature data (Upward trend + random noise)
             const years = Array.from({length: 50}, (_, i) => 1970 + i);
             const fullTemperatures = years.map(year => (year - 1970) * 0.02 + (Math.random() * 0.4 - 0.2));
             
-            // 2. Identify a "cherry-picked" flat/downward segment (e.g., years 1998 to 2008)
+            // Identify a "cherry-picked" flat/downward segment
             // We'll hide the rest of the data by setting it to 'null'
             const cherryPickedTemperatures = fullTemperatures.map((temp, index) => {
                 const year = years[index];
@@ -35,7 +35,7 @@
                 return null;
             });
 
-            // 3. Initialize the Chart
+            // Initialize the Chart
             const ctx = document.getElementById('climateChart').getContext('2d');
             const myChart = new Chart(ctx, {
                 type: 'line',
@@ -66,7 +66,7 @@
                 }
             });
 
-            // 4. Functions to update the chart when buttons are clicked
+            // Functions to update the chart when buttons are clicked
             function showFullTrend() {
                 myChart.data.datasets[0].data = fullTemperatures;
                 myChart.data.datasets[0].borderColor = 'red';
