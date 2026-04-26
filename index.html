@@ -57,7 +57,6 @@
 
     <div class="slide">
         <h1>9 Dishonest Chart Techniques</h1>
-        
         <div style="display: flex; justify-content: space-around; font-size: 1.4em; line-height: 1.6; margin-top: 50px;">
             <div style="width: 45%;">
                 <ul>
@@ -78,6 +77,193 @@
                 </ul>
             </div>
         </div>
+    </div>
+
+    <div class="slide">
+        <h1>Axis Truncation</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Truncating the baseline</li>
+            <li>Chart where y-axis does not start at zero.</li>
+            <li>Differences appear larger.</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Axis Truncation Example</h1>
+        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
+            <div style="width: 55%;">
+                <ul>
+                    <li>Fox News Tax Cuts Broadcast (2012).</li>
+                    <li>Truncated y-axis (starts at 34% instead of 0%).</li>
+                    <li>Exaggerates minor 4.6% tax increase, making second bar appear much larger.</li>
+                </ul>
+            </div>
+            <div style="width: 40%; text-align: center;">
+                <img src="images/1_truncated_baseline_final.png" alt="Axis Truncation Example" style="width: 100%;">
+                <p style="font-size: 0.6em; color: #666;"><em>Chart recreated from original in Python by the authors.</em></p>
+            </div>
+        </div>
+        <div style="margin-top: 40px; font-size: 0.7em; color: #555;">
+            Fox News Network. (2012, August 1). <em>If Bush tax cuts expire</em> [Television broadcast]. Media Matters for America.
+        </div>
+    </div>
+
+    <div class="slide">
+        <h1>Artificial Flattening or Steepening</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Flattening chart's visual appearance:
+                <ul>
+                    <li>Extreme aspect ratios.</li>
+                    <li>Overly broad y-axis.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Time Gap</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Using uneven or irregular time intervals on continuous axis but spacing them evenly.</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Oversmoothing</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Applying aggressive smoothing algorithms or over-fitted curves to raw data points.</li>
+            <li>Hides critical short-term fluctuations, volatility, or local extremes.</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Manipulating the Visual Encoding</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Manipulates choice of visual encoding.</li>
+            <li>Often by misleading colour, size and shape (encoding).</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Manipulating the Visual Encoding Example 1</h1>
+        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
+            <div style="width: 55%;">
+                <ul>
+                    <li>"Shrinking Family Doctor" (Time Magazine, 1990).</li>
+                    <li>Maps a 1D percentage drop to a 2D icon's height.</li>
+                    <li>Viewers perceive area, making the 1990 doctor look drastically smaller than the data supports.</li>
+                </ul>
+            </div>
+            <div style="width: 40%; text-align: center;">
+                <img src="images/7_symbolism_manipulation_final.png" alt="Symbolism Manipulation Example" style="width: 90%;">
+                <p style="font-size: 0.6em; color: #666;"><em>Chart recreated from original in Python by the authors.</em></p>
+            </div>
+        </div>
+        <div style="margin-top: 20px; font-size: 0.7em; color: #555;">
+            Time Magazine. (1990). <em>The Shrinking Family Doctor</em> [Data visualization]. InfoVis Wiki: The Lie Factor.
+        </div>
+    </div>
+
+    <div class="slide">
+        <h1>Manipulating the Visual Encoding Example 2</h1>
+        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
+            <div style="width: 50%;">
+                <ul>
+                    <li>The "Jet" / Rainbow Color Map.</li>
+                    <li>Using non-uniform color jumps.</li>
+                    <li>Creates visual boundaries.</li>
+                </ul>
+            </div>
+            <div style="width: 46%; text-align: center;">
+                <img src="images/5_color_manipulation_final.png" alt="Color Manipulation Example" style="width: 100%;">
+                <p style="font-size: 0.6em; color: #666;"><em>Chart recreated from original in Python by the authors.</em></p>
+            </div>
+        </div>
+        <div style="margin-top: 40px; font-size: 0.7em; color: #555;">
+            Smith, N., & van der Walt, S. (2015). <em>A better default colormap for Matplotlib</em>. Berkeley Institute for Data Science.
+        </div>
+    </div>
+
+    <div class="slide">
+        <h1>Perspective Distortion</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Distorts the mathematical proportions of the data:
+                <ul>
+                    <li>Tilting a pie chart to make foreground slices look larger.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Perspective Distortion Example</h1>
+        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
+            <div style="width: 60%;">
+                <ul>
+                    <li><strong>Context:</strong> Apple Macworld Keynote (2008).</li>
+                    <li><strong>Misuse:</strong> 3D tilt pushes the 19.5% slice into the middle.</li>
+                    <li><strong>Effect:</strong> Perspective distortion makes 19.5% appear physically larger than 21.2%.</li>
+                </ul>
+            </div>
+            <div style="width: 35%; text-align: center;">
+                <img src="images/4_3d_distortion_final.png" alt="3D Distortion Example" style="width: 100%;">
+                <p style="font-size: 0.6em; color: #666;"><em>Chart recreated from original in Python by the authors.</em></p>
+            </div>
+        </div>
+        <div style="margin-top: 30px; font-size: 0.7em; color: #555;">
+            Apple Inc. (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
+        </div>
+    </div>
+
+    <div class="slide">
+        <h1>Concealing Uncertainty</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>Removing:
+                <ul>
+                    <li>Error bars.</li>
+                    <li>Confidence intervals.</li>
+                    <li>Variance indicators.</li>
+                </ul>
+            </li>
+            <li>Suggests absolute precision in data that actually estimates or forecasts.</li>
+        </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Interactive Presentation</h1>
+        <ul style="font-size: 1.4em; line-height: 1.6;">
+            <li>To view interactive elements and additional content using Rslidy:</li>
+        </ul>
+        <div style="text-align: center; margin-top: 40px; font-size: 1.5em;">
+            <a href="https://davidheidinger0-hue.github.io/ivis-2026-g02-rslidy/" target="_blank">
+                https://davidheidinger0-hue.github.io/ivis-2026-g02-rslidy/
+            </a>
+        </div>
+    </div>
+
+    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <h1 style="font-size: 4em; text-align: center;">Related Work</h1>
+    </div>
+
+    <div class="slide">
+        <h1>Related Work</h1>
+        <ul style="font-size: 1.3em; line-height: 1.6;">
+            <li><strong>Awesome Misleading Visualizations:</strong> Curated GitHub List.<br>
+                <a href="https://github.com/UKPLab/awesome-misleading-visualizations" target="_blank">Link</a>
+            </li>
+            <li><strong>FlawViz:</strong> Collection of Misleading Data Visualization.<br>
+                <a href="https://flawviz.github.io/" target="_blank">Link</a>
+            </li>
+            <li><strong>FlowingData:</strong> Defensive Chart Techniques by Nathan Yau.<br>
+                <a href="https://flowingdata.com/projects/dishonest-charts/" target="_blank">Link</a>
+            </li>
+            <li><strong>How Charts Lie:</strong> Book by Alberto Cairo.<br>
+                <a href="https://wwnorton.com/books/9781324001560" target="_blank">Link</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <h1 style="font-size: 4em; text-align: center;">Questions?</h1>
     </div>
 
     <section>
