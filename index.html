@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <section>
+    <div class="slide">
         <div style="text-align: center; padding-top: 10%;">
             <h1 style="font-size: 3em; margin-bottom: 0.2em;">Dishonest Chart Techniques</h1>
             <h2>Group 2: Lukas Auer, David Heidinger, Nina Tschikof and Christina Vogel</h2>
@@ -23,7 +23,7 @@
                 This work is placed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence.
             </p>
         </div>
-    </section>
+    </div>
 
     <div class="slide">
         <h1>Overview</h1>
@@ -53,6 +53,10 @@
                 </ul>
             </li>
         </ul>
+    </div>
+
+    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+        <h1 style="font-size: 4em; text-align: center;">Taxonomy of Dishonest Chart Techniques</h1>
     </div>
 
     <div class="slide">
@@ -92,6 +96,24 @@
     </div>
 
     <div class="slide">
+        <h1>Cherry Picking Demo</h1>
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <div style="width: 800px; height: 400px; position: relative;">
+                <canvas id="climateChart"></canvas>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="showFullTrend()" style="padding: 10px; font-size: 16px; cursor: pointer;">Show Full Trend (Reality)</button>
+                <button onclick="showCherryPicked()" style="padding: 10px; font-size: 16px; cursor: pointer; background-color: #ffcccc;">Cherry Pick (Misleading)</button>
+            </div>
+            
+            <p style="font-size: 0.8em; color: #666; margin-top: 15px; text-align: center;">
+                Interactive chart created by the authors.
+            </p>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Cherry Picking Example</h1>
         <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
             <div style="width: 55%;">
@@ -125,6 +147,26 @@
                 </ul>
             </li>
         </ul>
+    </div>
+
+    <div class="slide">
+        <h1>Underbinning Demo</h1>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">Reducing the number of bins obscures the <br> true distribution, hiding important clusters.</p>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <div style="width: 800px; height: 400px; position: relative;">
+                <canvas id="underbinningChart"></canvas>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button onclick="showHonestBinning()" style="padding: 10px; font-size: 16px; cursor: pointer;">Show Detailed Bins (Reality)</button>
+                <button onclick="showUnderbinned()" style="padding: 10px; font-size: 16px; cursor: pointer; background-color: #ffcccc;">Underbin Data (Misleading)</button>
+            </div>
+            
+            <p style="font-size: 0.8em; color: #666; margin-top: 15px; text-align: center;">
+                Interactive chart created by the authors.
+            </p>
+        </div>
     </div>
 
     <div class="slide">
@@ -330,55 +372,6 @@
     <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
         <h1 style="font-size: 4em; text-align: center;">Questions?</h1>
     </div>
-
-    <section>
-        <div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-            <h1 style="font-size: 4em;">Examples</h1>
-        </div>
-    </section>
-
-    <section>
-        <h1>1. Cherry Picking Data</h1>
-        
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            
-            <div style="width: 800px; height: 400px; position: relative;">
-                <canvas id="climateChart"></canvas>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button onclick="showFullTrend()" style="padding: 10px; font-size: 16px; cursor: pointer;">Show Full Trend (Reality)</button>
-                <button onclick="showCherryPicked()" style="padding: 10px; font-size: 16px; cursor: pointer; background-color: #ffcccc;">Cherry Pick (Misleading)</button>
-            </div>
-            
-            <p style="font-size: 0.8em; color: #666; margin-top: 15px; text-align: center;">
-                Example chart created by the authors.
-            </p>
-            
-        </div>
-    </section>
-
-    <section>
-        <h1>2. Underbinning</h1>
-        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">Reducing the number of bins obscures the <br> true distribution, hiding important clusters.</p>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            
-            <div style="width: 800px; height: 400px; position: relative;">
-                <canvas id="underbinningChart"></canvas>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button onclick="showHonestBinning()" style="padding: 10px; font-size: 16px; cursor: pointer;">Show Detailed Bins (Reality)</button>
-                <button onclick="showUnderbinned()" style="padding: 10px; font-size: 16px; cursor: pointer; background-color: #ffcccc;">Underbin Data (Misleading)</button>
-            </div>
-            
-            <p style="font-size: 0.8em; color: #666; margin-top: 15px; text-align: center;">
-                Example chart created by the authors.
-            </p>
-            
-        </div>
-    </section>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
