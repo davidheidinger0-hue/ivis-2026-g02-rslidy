@@ -1432,6 +1432,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // ==========================================
             // 9. SETUP CONCEALING UNCERTAINTY 
             // ==========================================
+
             const uncertSlider = document.getElementById('uncertSlider');
             const uncertDisplay = document.getElementById('uncertDisplay');
             const uncertArea = document.getElementById('uncertArea');
@@ -1440,9 +1441,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const uncertPoints = document.getElementById('uncertPoints');
 
             if (uncertSlider && uncertArea && uncertLine) {
-                // Simulated forecast data. 
-                // 'y' is the projected value, 'err' is the maximum variance at 95% confidence.
-                // Notice how the error grows over time, typical of a forecast.
                 const forecastData = [
                     { month: 1, y: 50, err: 2 },
                     { month: 2, y: 52, err: 3 },
@@ -1458,16 +1456,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const uncertPlotX = 70, uncertPlotY = 20, uncertPlotW = 760, uncertPlotH = 360;
                 const minX = 1, maxX = 10;
-                const minY = 0, maxY = 120; // Fixed Y scale so the chart doesn't jump
+                const minY = 0, maxY = 120; 
 
                 function updateUncertSVG() {
                     const confidenceVal = parseInt(uncertSlider.value);
-                    const errorMultiplier = confidenceVal / 95; // Scales from 0 to 1
+                    const errorMultiplier = confidenceVal / 95; 
+
+                    // Determine if the current state is misleading (< 50% confidence shown)
+                    const isDishonest = confidenceVal < 50;
+                    
+                    // Match colors from Underbinning/Flattening charts
+                    const lineColor = isDishonest ? "#cc0000" : "#0055cc";
+                    const areaColor = isDishonest ? "rgba(255, 99, 132, 0.25)" : "rgba(54, 162, 235, 0.25)";
 
                     if (uncertDisplay) {
                         uncertDisplay.innerText = confidenceVal + '%';
-                        // Change text color to green when honest, red when concealed
-                        uncertDisplay.style.color = confidenceVal < 30 ? '#cc0000' : (confidenceVal > 70 ? 'green' : '#ff8800');
+                        uncertDisplay.style.color = isDishonest ? '#cc0000' : 'green';
                     }
 
                     let linePoints = [];
@@ -1475,39 +1479,36 @@ document.addEventListener('DOMContentLoaded', function() {
                     let lowerPoints = [];
                     let pointsHTML = '';
 
-                    // Calculate coordinates
                     forecastData.forEach(d => {
                         const px = uncertPlotX + ((d.month - minX) / (maxX - minX)) * uncertPlotW;
                         const py = (uncertPlotY + uncertPlotH) - ((d.y - minY) / (maxY - minY)) * uncertPlotH;
                         
-                        // Calculate variance based on the slider multiplier
                         const currentErr = d.err * errorMultiplier;
                         const pyUpper = (uncertPlotY + uncertPlotH) - (((d.y + currentErr) - minY) / (maxY - minY)) * uncertPlotH;
                         const pyLower = (uncertPlotY + uncertPlotH) - (((d.y - currentErr) - minY) / (maxY - minY)) * uncertPlotH;
 
                         linePoints.push(`${px},${py}`);
                         upperPoints.push(`${px},${pyUpper}`);
-                        lowerPoints.unshift(`${px},${pyLower}`); // unshift reverses the array for the path return trip
+                        lowerPoints.unshift(`${px},${pyLower}`); 
 
-                        // Draw data dots
-                        pointsHTML += `<circle cx="${px}" cy="${py}" r="4" fill="#0055cc"></circle>`;
+                        // Apply dynamic color to the points
+                        pointsHTML += `<circle cx="${px}" cy="${py}" r="4" fill="${lineColor}"></circle>`;
                     });
 
-                    // Draw the center line
+                    // Apply dynamic colors to the line and shaded area
                     uncertLine.setAttribute("points", linePoints.join(" "));
+                    uncertLine.setAttribute("stroke", lineColor);
                     
-                    // Draw the shaded area (draw upper path left-to-right, then lower path right-to-left)
                     const areaPath = `M ${upperPoints[0]} L ${upperPoints.join(" L ")} L ${lowerPoints.join(" L ")} Z`;
                     uncertArea.setAttribute("d", areaPath);
+                    uncertArea.setAttribute("fill", areaColor);
                     
                     uncertPoints.innerHTML = pointsHTML;
 
-                    // Draw static axes (only needs to be done once, but safe here)
                     let axesHTML = '';
                     axesHTML += `<line x1="${uncertPlotX}" y1="${uncertPlotY}" x2="${uncertPlotX}" y2="${uncertPlotY+uncertPlotH}" stroke="#555" stroke-width="2"/>`;
                     axesHTML += `<line x1="${uncertPlotX}" y1="${uncertPlotY+uncertPlotH}" x2="${uncertPlotX+uncertPlotW}" y2="${uncertPlotY+uncertPlotH}" stroke="#555" stroke-width="2"/>`;
 
-                    // Y-axis labels
                     const ySteps = 4;
                     for (let i = 0; i <= ySteps; i++) {
                         const valY = minY + (i / ySteps) * (maxY - minY);
@@ -1516,7 +1517,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         axesHTML += `<text x="${uncertPlotX - 10}" y="${py + 5}" text-anchor="end" font-size="14" fill="#555">${valY}</text>`;
                     }
 
-                    // X-axis labels
                     for (let i = minX; i <= maxX; i++) {
                         const px = uncertPlotX + ((i - minX) / (maxX - minX)) * uncertPlotW;
                         axesHTML += `<line x1="${px}" y1="${uncertPlotY+uncertPlotH}" x2="${px}" y2="${uncertPlotY+uncertPlotH+5}" stroke="#555"/>`;
@@ -1527,10 +1527,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 uncertSlider.addEventListener('input', updateUncertSVG);
-                updateUncertSVG(); // Initial draw
+                updateUncertSVG(); 
             }
-
-
 
             
 
