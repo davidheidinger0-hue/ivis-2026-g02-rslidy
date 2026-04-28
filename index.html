@@ -339,6 +339,40 @@
     </div>
 
     <div class="slide">
+        <h1 style="margin-bottom: 2rem;">Oversmoothing Demo</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <div style="width: 100%; max-width: 850px; height: 42vh; position: relative; margin-bottom: 1.5rem;">
+                <canvas id="oversmoothingChart"></canvas>
+            </div>
+
+            <div style="width: 100%; max-width: 400px; margin: 0 auto 1.5rem auto; text-align: center;">
+                <label for="smoothingSlider" style="font-size: 1.1em;">
+                    Smoothing window: <span id="smoothingSliderValue">1</span>
+                </label>
+                <br>
+                <input 
+                    id="smoothingSlider" 
+                    type="range" 
+                    min="1" 
+                    max="15" 
+                    value="1" 
+                    step="2"
+                    style="width: 90%; margin-top: 0.8rem;"
+                >
+            </div>
+
+            <p id="oversmoothingMessage" style="font-size: 1.1em; text-align: center; margin-bottom: 1.5rem;">
+                Low smoothing: short-term fluctuations are still visible.
+            </p>
+
+            <div class="footnote" style="text-align: center;">
+                Interactive chart created by the authors.
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Manipulating the Visual Encoding</h1>
         <ul style="font-size: 1.4em; line-height: 1.6;">
             <li>Manipulates choice of visual encoding.</li>
@@ -415,7 +449,7 @@
             </div>
         </div>
         <div class="footnote">
-            Apple Inc. (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
+            Apple (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
             Retrieved from <a href="https://paragraft.wordpress.com/tag/infovis/" target="_blank">https://paragraft.wordpress.com/tag/infovis/</a>
         </div>
     </div>
@@ -739,6 +773,115 @@
                 });
             }
 
+
+            // ==========================================
+            // 5. SETUP OVERSMOOTHING DATA & LOGIC
+            // ==========================================
+
+            const oversmoothingLabels = Array.from({ length: 40 }, (_, i) => i + 1);
+
+            const rawOversmoothingData = [
+                50, 52, 49, 55, 53, 70, 52, 48, 51, 50,
+                49, 47, 30, 48, 51, 53, 55, 54, 52, 50,
+                51, 53, 75, 54, 52, 50, 49, 51, 50, 48,
+                47, 46, 45, 58, 44, 43, 42, 41, 40, 39
+            ];
+
+            function movingAverage(data, windowSize) {
+                if (windowSize <= 1) return data;
+
+                return data.map((value, index) => {
+                    const halfWindow = Math.floor(windowSize / 2);
+                    const start = Math.max(0, index - halfWindow);
+                    const end = Math.min(data.length, index + halfWindow + 1);
+                    const subset = data.slice(start, end);
+                    const sum = subset.reduce((total, current) => total + current, 0);
+                    return sum / subset.length;
+                });
+            }
+
+            function drawOversmoothingChart() {
+                const ctx4 = document.getElementById('oversmoothingChart').getContext('2d');
+
+                window.myOversmoothingChart = new Chart(ctx4, {
+                    type: 'line',
+                    data: {
+                        labels: oversmoothingLabels,
+                        datasets: [
+                            {
+                                label: 'Raw data',
+                                data: rawOversmoothingData,
+                                borderColor: 'rgba(120, 120, 120, 0.5)',
+                                backgroundColor: 'rgba(120, 120, 120, 0.15)',
+                                borderWidth: 1,
+                                pointRadius: 3,
+                                tension: 0
+                            },
+                            {
+                                label: 'Smoothed line',
+                                data: rawOversmoothingData,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.15)',
+                                borderWidth: 3,
+                                pointRadius: 0,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            y: {
+                                min: 20,
+                                max: 80,
+                                title: {
+                                    display: true,
+                                    text: 'Value'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Time'
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Raw data with minimal smoothing'
+                            }
+                        }
+                    }
+                });
+
+                const slider = document.getElementById('smoothingSlider');
+                const sliderValue = document.getElementById('smoothingSliderValue');
+                const message = document.getElementById('oversmoothingMessage');
+
+                slider.addEventListener('input', function () {
+                    const windowSize = Number(this.value);
+                    const smoothedData = movingAverage(rawOversmoothingData, windowSize);
+
+                    sliderValue.innerText = windowSize;
+                    window.myOversmoothingChart.data.datasets[1].data = smoothedData;
+
+                    if (windowSize <= 3) {
+                        window.myOversmoothingChart.options.plugins.title.text = 'Low smoothing: local variation remains visible';
+                        message.innerText = 'Low smoothing: short-term fluctuations are still visible.';
+                    } else if (windowSize <= 9) {
+                        window.myOversmoothingChart.options.plugins.title.text = 'Moderate smoothing: fluctuations become less visible';
+                        message.innerText = 'Moderate smoothing: peaks and dips are reduced.';
+                    } else {
+                        window.myOversmoothingChart.options.plugins.title.text = 'Oversmoothing: important local patterns are hidden';
+                        message.innerText = 'High smoothing: spikes and drops almost disappear, creating a cleaner but less truthful story.';
+                    }
+
+                    window.myOversmoothingChart.update();
+                });
+            }
             // ==========================================
             // 5. SETUP TIME GAP LOGIC (BAR CHART - EXTREME)
             // ==========================================
@@ -829,7 +972,7 @@
             
 
             // ==========================================
-            // CANVAS OBSERVERS
+            // 6. CANVAS OBSERVERS
             // ==========================================
             
             const canvas1 = document.getElementById('climateChart');
@@ -868,14 +1011,23 @@
             });
             if (canvas4) observer4.observe(canvas4);
 
-            const canvas5 = document.getElementById('timeGapChart');
+            const canvas5 = document.getElementById('oversmoothingChart');
             const observer5 = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
-                    drawTimeGapChart();             
-                    observer5.disconnect();   
+                    drawOversmoothingChart();
+                    observer5.disconnect();
                 }
             });
             if (canvas5) observer5.observe(canvas5);
+
+            const canvas6 = document.getElementById('timeGapChart');
+            const observer6 = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    drawTimeGapChart();             
+                    observer6.disconnect();   
+                }
+            });
+            if (canvas6) observer6.observe(canvas6);
         });
     </script>
 </body>
