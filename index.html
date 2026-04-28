@@ -309,6 +309,28 @@
     </div>
 
     <div class="slide">
+        <h1>Time Gap Demo</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
+            <div style="width: 100%; max-width: 800px; height: 35vh; position: relative;">
+                <canvas id="timeGapChart"></canvas>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; width: 70%; max-width: 800px;">
+                <input type="range" id="timeGapSlider" min="0" max="100" value="0" style="width: 100%; cursor: pointer;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888; margin-top: 5px;">
+                    <span>All Years Shown</span>
+                    <span>Stagnant Years Deleted</span>
+                </div>
+            </div>
+            
+            <div class="footnote" style="text-align: center; width: 100%;">
+                Interactive chart created by the authors.
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Oversmoothing</h1>
         <ul style="font-size: 1.4em; line-height: 1.6;">
             <li>Applying aggressive smoothing algorithms or over-fitted curves to raw data points.</li>
@@ -717,12 +739,97 @@
                 });
             }
 
+// ==========================================
+            // 5. SETUP TIME GAP LOGIC (BAR CHART - EXTREME)
+            // ==========================================
+            
+            // 21 Years total: 2000 to 2020
+            const fullYears = [
+                2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 
+                2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
+            ];
+            
+            // 19 years of boring stagnation, followed by a massive 2-year spike
+            const fullValues = [
+                10, 11, 9, 12, 10, 13, 11, 12, 10, 14, 
+                11, 12, 10, 13, 11, 12, 10, 11, 12, 60, 85
+            ]; 
+
+            function drawTimeGapChart() {
+                const ctx5 = document.getElementById('timeGapChart').getContext('2d');
+                window.myTimeGapChart = new Chart(ctx5, {
+                    type: 'bar',
+                    data: {
+                        labels: [...fullYears],
+                        datasets: [{
+                            label: 'Revenue (Millions)',
+                            data: [...fullValues],
+                            backgroundColor: 'rgba(0, 85, 204, 0.6)',
+                            borderColor: '#0055cc',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 200 }, // Snappy transition when bars vanish
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: { display: true, text: 'Revenue' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Year' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const timeGapSlider = document.getElementById('timeGapSlider');
+            const timeGapStatus = document.getElementById('timeGapStatus');
+
+            if (timeGapSlider) {
+                timeGapSlider.addEventListener('input', function(e) {
+                    const val = parseInt(e.target.value); 
+                    
+                    // Dynamically remove up to 18 middle years (from 2001 to 2018)
+                    const removeCount = Math.round((val / 100) * 18); 
+                    
+                    let currentYears = [...fullYears];
+                    let currentValues = [...fullValues];
+
+                    // Splice out the boring middle years, keeping the year 2000 as an anchor
+                    currentYears.splice(1, removeCount);
+                    currentValues.splice(1, removeCount);
+
+                    if (window.myTimeGapChart) {
+                        window.myTimeGapChart.data.labels = currentYears;
+                        window.myTimeGapChart.data.datasets[0].data = currentValues;
+                        
+                        // Turn alarming red when highly distorted
+                        if (val > 80) {
+                            window.myTimeGapChart.data.datasets[0].backgroundColor = 'rgba(204, 0, 0, 0.6)';
+                            window.myTimeGapChart.data.datasets[0].borderColor = '#cc0000';
+                        } else {
+                            window.myTimeGapChart.data.datasets[0].backgroundColor = 'rgba(0, 85, 204, 0.6)';
+                            window.myTimeGapChart.data.datasets[0].borderColor = '#0055cc';
+                        }
+                        
+                        window.myTimeGapChart.update();
+                    }
+                });
+            }
+
+
+
 
 
             
 
             // ==========================================
-            // 4. CANVAS OBSERVERS
+            // CANVAS OBSERVERS
             // ==========================================
             
             const canvas1 = document.getElementById('climateChart');
@@ -760,6 +867,15 @@
                 }
             });
             if (canvas4) observer4.observe(canvas4);
+
+            const canvas5 = document.getElementById('timeGapChart');
+            const observer5 = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    drawTimeGapChart();             
+                    observer5.disconnect();   
+                }
+            });
+            if (canvas5) observer5.observe(canvas5);
         });
     </script>
 </body>
