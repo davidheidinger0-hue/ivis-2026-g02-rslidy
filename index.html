@@ -560,6 +560,39 @@
     </div>
 
     <div class="slide">
+        <h1 style="margin-bottom: 2rem;">Perspective Distortion Demo</h1>
+
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <svg id="perspectivePie" width="720" height="420" viewBox="0 0 720 420"></svg>
+
+            <div style="width: 100%; max-width: 400px; margin: 0 auto 1.2rem auto; text-align: center;">
+                <label for="tiltSlider" style="font-size: 1.1em;">
+                    Perspective tilt: <span id="tiltSliderValue">0</span>%
+                </label>
+                <br>
+                <input
+                    id="tiltSlider"
+                    type="range"
+                    min="0"
+                    max="70"
+                    value="0"
+                    step="5"
+                    style="width: 90%; margin-top: 0.8rem;"
+                >
+            </div>
+
+            <p id="perspectiveMessage" style="font-size: 1.1em; text-align: center; margin-bottom: 1rem;">
+                No tilt: slices are easier to compare by their actual angle.
+            </p>
+
+            <div class="footnote" style="text-align: center;">
+                Interactive chart created by the authors.
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Perspective Distortion Example</h1>
         <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
             <div style="width: 60%;">
@@ -1184,6 +1217,116 @@
                 });
             })();
 
+            // ==========================================
+            // SETUP PERSPECTIVE DISTORTION DATA & LOGIC
+            // ==========================================
+
+            const perspectiveData = [
+                { label: 'A', value: 21.2, color: '#5DADE2' },
+                { label: 'B', value: 19.5, color: '#F1948A' },
+                { label: 'C', value: 59.3, color: '#AAB7B8' }
+            ];
+
+            function polarToCartesian(cx, cy, rx, ry, angleDegrees) {
+                const angleRadians = (angleDegrees - 90) * Math.PI / 180.0;
+                return {
+                    x: cx + (rx * Math.cos(angleRadians)),
+                    y: cy + (ry * Math.sin(angleRadians))
+                };
+            }
+
+            function describeSlice(cx, cy, rx, ry, startAngle, endAngle) {
+                const start = polarToCartesian(cx, cy, rx, ry, endAngle);
+                const end = polarToCartesian(cx, cy, rx, ry, startAngle);
+                const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+                return [
+                    "M", cx, cy,
+                    "L", start.x, start.y,
+                    "A", rx, ry, 0, largeArcFlag, 0, end.x, end.y,
+                    "Z"
+                ].join(" ");
+            }
+
+            function drawPerspectivePie(tilt) {
+                const svg = document.getElementById('perspectivePie');
+                svg.innerHTML = '';
+
+                const cx = 360;
+                const cy = 180;
+                const rx = 150;
+                const ry = 150 - tilt;
+                const depth = tilt * 0.45;
+
+                let currentAngle = 0;
+
+                perspectiveData.forEach(slice => {
+                    const sliceAngle = (slice.value / 100) * 360;
+                    const startAngle = currentAngle;
+                    const endAngle = currentAngle + sliceAngle;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', describeSlice(cx, cy, rx, ry, startAngle, endAngle));
+                    path.setAttribute('fill', slice.color);
+                    path.setAttribute('stroke', '#ffffff');
+                    path.setAttribute('stroke-width', '2');
+
+                    svg.appendChild(path);
+
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const labelPos = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
+
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', labelPos.x);
+                    text.setAttribute('y', labelPos.y);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('dominant-baseline', 'middle');
+                    text.setAttribute('font-size', '18');
+                    text.setAttribute('font-weight', 'bold');
+                    text.textContent = `${slice.label}: ${slice.value}%`;
+
+                    svg.appendChild(text);
+
+                    currentAngle = endAngle;
+                });
+
+                if (tilt > 0) {
+                    const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+                    shadow.setAttribute('cx', cx);
+                    shadow.setAttribute('cy', cy + depth + 8);
+                    shadow.setAttribute('rx', rx);
+                    shadow.setAttribute('ry', ry);
+                    shadow.setAttribute('fill', 'none');
+                    shadow.setAttribute('stroke', '#777');
+                    shadow.setAttribute('stroke-width', depth);
+                    shadow.setAttribute('opacity', '0.35');
+                    svg.insertBefore(shadow, svg.firstChild);
+                }
+            }
+
+            function initPerspectiveDistortionDemo() {
+                drawPerspectivePie(0);
+
+                const slider = document.getElementById('tiltSlider');
+                const sliderValue = document.getElementById('tiltSliderValue');
+                const message = document.getElementById('perspectiveMessage');
+
+                slider.addEventListener('input', function () {
+                    const tilt = Number(this.value);
+
+                    sliderValue.innerText = tilt;
+                    drawPerspectivePie(tilt);
+
+                    if (tilt === 0) {
+                        message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
+                    } else if (tilt < 40) {
+                        message.innerText = 'Moderate tilt: the chart starts to look three-dimensional.';
+                    } else {
+                        message.innerText = 'Strong tilt: perspective makes some slices appear visually more important than their values suggest.';
+                    }
+                });
+            }
+
 
 
 
@@ -1247,6 +1390,15 @@
                 }
             });
             if (canvas6) observer6.observe(canvas6);
+
+            const perspectiveDemo = document.getElementById('perspectivePie');
+            const observerPerspective = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    initPerspectiveDistortionDemo();
+                    observerPerspective.disconnect();
+                }
+            });
+            if (perspectiveDemo) observerPerspective.observe(perspectiveDemo);
         });
     </script>
 </body>
