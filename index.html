@@ -159,7 +159,7 @@
             <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
                 <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 5px;">
                     <span style="font-weight: bold; color: green;">Full Trend (1970 - 2023)</span>
-                    <span style="font-weight: bold; color: #cc0000;">"The Hiatus" (1998 - 2012)</span>
+                    <span style="font-weight: bold; color: #cc0000;">"The Hiatus" (1998 - 2011)</span>
                 </div>
                 <input type="range" id="cherrySlider" min="0" max="100" value="0" style="width: 100%; cursor: pointer;">
             </div>
@@ -673,7 +673,7 @@
     <script>
 document.addEventListener('DOMContentLoaded', function() {
             
-            // ==========================================
+           // ==========================================
             // 1. SETUP CHERRY PICKING (NASA GISS DATA)
             // ==========================================
             const cherrySlider = document.getElementById('cherrySlider');
@@ -691,8 +691,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
 
                 const cherryPlotX = 70, cherryPlotY = 20, cherryPlotW = 760, cherryPlotH = 360;
+                
+                // Adjusted zoom bounds to end on the 2011 drop
                 const fullX = [1970, 2023], fullY = [-0.2, 1.3];
-                const zoomX = [1998, 2012], zoomY = [0.35, 0.75]; 
+                const zoomX = [1998, 2011], zoomY = [0.35, 0.75]; 
 
                 function updateCherrySVG() {
                     const val = parseInt(cherrySlider.value) / 100;
@@ -703,17 +705,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     const curYMin = fullY[0] + ease * (zoomY[0] - fullY[0]);
                     const curYMax = fullY[1] + ease * (zoomY[1] - fullY[1]);
 
+                    // Map points
                     const points = climateData.map(d => {
                         const px = cherryPlotX + ((d.y - curXMin) / (curXMax - curXMin)) * cherryPlotW;
                         const py = (cherryPlotY + cherryPlotH) - ((d.t - curYMin) / (curYMax - curYMin)) * cherryPlotH;
                         return `${px},${py}`;
                     }).join(" ");
+                    
                     cherryLine.setAttribute("points", points);
+                    // Apply a clipping mask directly to the line so it doesn't spill out
+                    cherryLine.setAttribute("clip-path", "url(#cherryClipMask)");
 
-                    let axesHTML = '';
+                    // Build the Axes and the ClipPath
+                    let axesHTML = `
+                        <defs>
+                            <clipPath id="cherryClipMask">
+                                <rect x="${cherryPlotX}" y="${cherryPlotY}" width="${cherryPlotW}" height="${cherryPlotH}" />
+                            </clipPath>
+                        </defs>
+                    `;
+
+                    // Main border lines
                     axesHTML += `<line x1="${cherryPlotX}" y1="${cherryPlotY}" x2="${cherryPlotX}" y2="${cherryPlotY+cherryPlotH}" stroke="#555" stroke-width="2"/>`;
                     axesHTML += `<line x1="${cherryPlotX}" y1="${cherryPlotY+cherryPlotH}" x2="${cherryPlotX+cherryPlotW}" y2="${cherryPlotY+cherryPlotH}" stroke="#555" stroke-width="2"/>`;
 
+                    // Dynamic Y-Axis
                     const ySteps = 5;
                     for (let i = 0; i <= ySteps; i++) {
                         const prop = i / ySteps;
@@ -723,8 +739,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         axesHTML += `<text x="${cherryPlotX - 10}" y="${py + 5}" text-anchor="end" font-size="14" fill="#555">${valY.toFixed(2)}</text>`;
                     }
 
-                    axesHTML += `<text x="${cherryPlotX}" y="${cherryPlotY+cherryPlotH+20}" text-anchor="middle" font-size="14" fill="#555">${Math.round(curXMin)}</text>`;
-                    axesHTML += `<text x="${cherryPlotX+cherryPlotW}" y="${cherryPlotY+cherryPlotH+20}" text-anchor="middle" font-size="14" fill="#555">${Math.round(curXMax)}</text>`;
+                    // Dynamic X-Axis (Multiple years)
+                    const xSteps = 5;
+                    for (let i = 0; i <= xSteps; i++) {
+                        const prop = i / xSteps;
+                        const valX = curXMin + prop * (curXMax - curXMin);
+                        const px = cherryPlotX + (prop * cherryPlotW);
+                        
+                        // Add a small tick mark
+                        axesHTML += `<line x1="${px}" y1="${cherryPlotY+cherryPlotH}" x2="${px}" y2="${cherryPlotY+cherryPlotH+5}" stroke="#555"/>`;
+                        // Add the year label
+                        axesHTML += `<text x="${px}" y="${cherryPlotY+cherryPlotH+25}" text-anchor="middle" font-size="14" fill="#555">${Math.round(valX)}</text>`;
+                    }
                     
                     cherryAxes.innerHTML = axesHTML;
                 }
@@ -732,7 +758,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 cherrySlider.addEventListener('input', updateCherrySVG);
                 updateCherrySVG();
             }
-
 
             // ==========================================
             // 2. SETUP UNDERBINNING (BIMODAL DATASET)
