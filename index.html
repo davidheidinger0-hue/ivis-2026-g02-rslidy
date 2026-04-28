@@ -646,6 +646,39 @@
         </ul>
     </div>
 
+    <div class="slide">
+        <h1>Concealing Uncertainty Demo</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
+            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
+                <svg id="uncertSvg" viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif; background-color: #ffffff; border-radius: 8px; padding: 10px;">
+                    <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Projected Revenue (Millions)</text>
+                    <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Month</text>
+                    
+                    <g id="uncertAxes"></g>
+                    <path id="uncertArea" fill="rgba(54, 162, 235, 0.25)" stroke="none"></path>
+                    <polyline id="uncertLine" fill="none" stroke="#0055cc" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"></polyline>
+                    <g id="uncertPoints"></g>
+                </svg>
+            </div>
+            
+            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
+                <label for="uncertSlider" style="font-size: 1.2em; font-weight: bold; color: #333;">
+                    Confidence Interval Shown: <span id="uncertDisplay" style="color: #cc0000;">0%</span>
+                </label>
+                <input type="range" id="uncertSlider" min="0" max="95" value="0" step="1" style="width: 100%; cursor: pointer; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888; margin-top: 5px;">
+                    <span>0% (Concealed / Misleading)</span>
+                    <span>95% (Honest Forecast)</span>
+                </div>
+            </div>
+
+            <div class="footnote" style="text-align: center; width: 100%;">
+                Interactive chart created by the authors.
+            </div>
+        </div>
+    </div>
+
     <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
         <h1 style="font-size: 4em; text-align: center;">Related Work</h1>
     </div>
@@ -1287,7 +1320,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })();
 
             // ==========================================
-            // SETUP PERSPECTIVE DISTORTION DATA & LOGIC
+            // 8. SETUP PERSPECTIVE DISTORTION DATA & LOGIC
             // ==========================================
 
             const perspectiveData = [
@@ -1396,7 +1429,106 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
+            // ==========================================
+            // 9. SETUP CONCEALING UNCERTAINTY 
+            // ==========================================
+            const uncertSlider = document.getElementById('uncertSlider');
+            const uncertDisplay = document.getElementById('uncertDisplay');
+            const uncertArea = document.getElementById('uncertArea');
+            const uncertLine = document.getElementById('uncertLine');
+            const uncertAxes = document.getElementById('uncertAxes');
+            const uncertPoints = document.getElementById('uncertPoints');
 
+            if (uncertSlider && uncertArea && uncertLine) {
+                // Simulated forecast data. 
+                // 'y' is the projected value, 'err' is the maximum variance at 95% confidence.
+                // Notice how the error grows over time, typical of a forecast.
+                const forecastData = [
+                    { month: 1, y: 50, err: 2 },
+                    { month: 2, y: 52, err: 3 },
+                    { month: 3, y: 55, err: 5 },
+                    { month: 4, y: 53, err: 8 },
+                    { month: 5, y: 58, err: 12 },
+                    { month: 6, y: 62, err: 16 },
+                    { month: 7, y: 60, err: 20 },
+                    { month: 8, y: 65, err: 25 },
+                    { month: 9, y: 68, err: 30 },
+                    { month: 10, y: 72, err: 36 }
+                ];
+
+                const uncertPlotX = 70, uncertPlotY = 20, uncertPlotW = 760, uncertPlotH = 360;
+                const minX = 1, maxX = 10;
+                const minY = 0, maxY = 120; // Fixed Y scale so the chart doesn't jump
+
+                function updateUncertSVG() {
+                    const confidenceVal = parseInt(uncertSlider.value);
+                    const errorMultiplier = confidenceVal / 95; // Scales from 0 to 1
+
+                    if (uncertDisplay) {
+                        uncertDisplay.innerText = confidenceVal + '%';
+                        // Change text color to green when honest, red when concealed
+                        uncertDisplay.style.color = confidenceVal < 30 ? '#cc0000' : (confidenceVal > 70 ? 'green' : '#ff8800');
+                    }
+
+                    let linePoints = [];
+                    let upperPoints = [];
+                    let lowerPoints = [];
+                    let pointsHTML = '';
+
+                    // Calculate coordinates
+                    forecastData.forEach(d => {
+                        const px = uncertPlotX + ((d.month - minX) / (maxX - minX)) * uncertPlotW;
+                        const py = (uncertPlotY + uncertPlotH) - ((d.y - minY) / (maxY - minY)) * uncertPlotH;
+                        
+                        // Calculate variance based on the slider multiplier
+                        const currentErr = d.err * errorMultiplier;
+                        const pyUpper = (uncertPlotY + uncertPlotH) - (((d.y + currentErr) - minY) / (maxY - minY)) * uncertPlotH;
+                        const pyLower = (uncertPlotY + uncertPlotH) - (((d.y - currentErr) - minY) / (maxY - minY)) * uncertPlotH;
+
+                        linePoints.push(`${px},${py}`);
+                        upperPoints.push(`${px},${pyUpper}`);
+                        lowerPoints.unshift(`${px},${pyLower}`); // unshift reverses the array for the path return trip
+
+                        // Draw data dots
+                        pointsHTML += `<circle cx="${px}" cy="${py}" r="4" fill="#0055cc"></circle>`;
+                    });
+
+                    // Draw the center line
+                    uncertLine.setAttribute("points", linePoints.join(" "));
+                    
+                    // Draw the shaded area (draw upper path left-to-right, then lower path right-to-left)
+                    const areaPath = `M ${upperPoints[0]} L ${upperPoints.join(" L ")} L ${lowerPoints.join(" L ")} Z`;
+                    uncertArea.setAttribute("d", areaPath);
+                    
+                    uncertPoints.innerHTML = pointsHTML;
+
+                    // Draw static axes (only needs to be done once, but safe here)
+                    let axesHTML = '';
+                    axesHTML += `<line x1="${uncertPlotX}" y1="${uncertPlotY}" x2="${uncertPlotX}" y2="${uncertPlotY+uncertPlotH}" stroke="#555" stroke-width="2"/>`;
+                    axesHTML += `<line x1="${uncertPlotX}" y1="${uncertPlotY+uncertPlotH}" x2="${uncertPlotX+uncertPlotW}" y2="${uncertPlotY+uncertPlotH}" stroke="#555" stroke-width="2"/>`;
+
+                    // Y-axis labels
+                    const ySteps = 4;
+                    for (let i = 0; i <= ySteps; i++) {
+                        const valY = minY + (i / ySteps) * (maxY - minY);
+                        const py = (uncertPlotY + uncertPlotH) - (i / ySteps) * uncertPlotH;
+                        axesHTML += `<line x1="${uncertPlotX}" y1="${py}" x2="${uncertPlotX+uncertPlotW}" y2="${py}" stroke="#eee"/>`;
+                        axesHTML += `<text x="${uncertPlotX - 10}" y="${py + 5}" text-anchor="end" font-size="14" fill="#555">${valY}</text>`;
+                    }
+
+                    // X-axis labels
+                    for (let i = minX; i <= maxX; i++) {
+                        const px = uncertPlotX + ((i - minX) / (maxX - minX)) * uncertPlotW;
+                        axesHTML += `<line x1="${px}" y1="${uncertPlotY+uncertPlotH}" x2="${px}" y2="${uncertPlotY+uncertPlotH+5}" stroke="#555"/>`;
+                        axesHTML += `<text x="${px}" y="${uncertPlotY+uncertPlotH+25}" text-anchor="middle" font-size="14" fill="#555">M${i}</text>`;
+                    }
+
+                    uncertAxes.innerHTML = axesHTML;
+                }
+
+                uncertSlider.addEventListener('input', updateUncertSVG);
+                updateUncertSVG(); // Initial draw
+            }
 
 
 
