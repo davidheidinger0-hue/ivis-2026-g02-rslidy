@@ -20,6 +20,44 @@
             color: #555;
             margin-top: 1.5em;
         }
+        /* Modern Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin: 0 15px;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider-toggle {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: green; /* Honest state */
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider-toggle:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-toggle {
+            background-color: #cc0000; /* Dishonest state */
+        }
+        input:checked + .slider-toggle:before {
+            transform: translateX(26px);
+        }
     </style>
 </head>
 <body>
@@ -394,6 +432,36 @@
     </div>
 
     <div class="slide">
+        <h1>Visual Encoding Demo 1: Size (Area)</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
+            <div style="width: 100%; max-width: 600px; margin-bottom: 20px;">
+                <svg viewBox="0 0 600 300" style="width: 100%; height: auto; overflow: visible;">
+                    <circle cx="200" cy="150" r="80" fill="rgba(0, 85, 204, 0.6)" stroke="#0055cc" stroke-width="3" />
+                    <text x="200" y="260" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 1 (100%)</text>
+                    
+                    <circle id="svgCircleCompare" cx="450" cy="150" r="56.57" fill="rgba(255, 99, 132, 0.6)" stroke="#cc0000" stroke-width="3" style="transition: r 0.4s ease;" />
+                    <text x="450" y="260" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 2 (50% Drop)</text>
+                </svg>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center; width: 100%;">
+                <div style="display: flex; justify-content: center; align-items: center; font-size: 1.1em; color: #555;">
+                    <span id="sizeLabelHonest" style="font-weight: bold; color: green; display: inline-block; width: 160px; text-align: right;">2D Area</span>
+                    
+                    <label class="switch">
+                        <input type="checkbox" id="svgSizeToggle">
+                        <span class="slider-toggle"></span>
+                    </label>
+                    
+                    <span id="sizeLabelDishonest" style="display: inline-block; width: 160px; text-align: left;">1D Radius</span>
+                </div>
+            </div>
+            <div class="footnote" style="text-align: center; width: 100%;">Interactive chart created by the authors.</div>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Manipulating the Visual Encoding Example 1</h1>
         <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
             <div style="width: 55%;">
@@ -411,6 +479,51 @@
         <div class="footnote">
             Time Magazine. (1990). <em>The Shrinking Family Doctor</em> [Data visualization]. InfoVis Wiki: The Lie Factor.
             Retrieved from <a href="https://infovis-wiki.net/wiki/Lie_Factor" target="_blank">https://infovis-wiki.net/wiki/Lie_Factor</a>
+        </div>
+    </div>
+
+<div class="slide">
+        <h1>Visual Encoding Demo 2: Color Mapping</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
+            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
+                <svg viewBox="0 0 850 400" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
+                    <defs>
+                        <linearGradient id="gradHonest" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#c6dbef" />
+                            <stop offset="50%" stop-color="#4292c6" />
+                            <stop offset="100%" stop-color="#08306b" />
+                        </linearGradient>
+                        <linearGradient id="gradDishonest" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#0000cc" />
+                            <stop offset="20%" stop-color="#00ccff" />
+                            <stop offset="40%" stop-color="#00ffcc" />
+                            <stop offset="60%" stop-color="#ffff00" />
+                            <stop offset="80%" stop-color="#ff3300" />
+                            <stop offset="100%" stop-color="#cc0000" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <line x1="50" y1="20" x2="50" y2="350" stroke="#333" stroke-width="2" />
+                    <line x1="50" y1="350" x2="800" y2="350" stroke="#333" stroke-width="2" />
+                    <text x="-185" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Data Value</text>
+                    <text x="425" y="390" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Distance / Time</text>
+
+                    <path id="svgColorArea" d="M 50,350 L 50,250 C 200,250 250,50 400,100 C 550,150 600,50 800,200 L 800,350 Z" fill="url(#gradHonest)" stroke="#333" stroke-width="2" style="transition: fill 0.4s ease;" />
+                </svg>
+            </div>
+            
+            <div style="margin-top: 10px; text-align: center; width: 100%;">
+                <div style="display: flex; justify-content: center; align-items: center; font-size: 1.1em; color: #555;">
+                    <span id="colorLabelHonest" style="font-weight: bold; color: green; display: inline-block; width: 200px; text-align: right;">Sequential Palette</span>
+                    <label class="switch">
+                        <input type="checkbox" id="svgColorToggle">
+                        <span class="slider-toggle"></span>
+                    </label>
+                    <span id="colorLabelDishonest" style="display: inline-block; width: 200px; text-align: left;">Jet Map</span>
+                </div>
+            </div>
+            <div class="footnote" style="text-align: center; width: 100%;">Interactive chart created by the authors.</div>
         </div>
     </div>
 
@@ -1006,6 +1119,70 @@
                     }
                 });
             }
+
+            // ==========================================
+            // 6. SETUP VISUAL ENCODING LOGIC (SIZE / AREA - TOGGLE)
+            // ==========================================
+            (function initSVGSizeArea() {
+                const baseRadius = 80;
+                const honestRadius = baseRadius * Math.sqrt(0.5); 
+                const dishonestRadius = baseRadius * 0.5; 
+
+                const compareCircle = document.getElementById('svgCircleCompare');
+                const toggle = document.getElementById('svgSizeToggle');
+                const statusText = document.getElementById('svgSizeStatus');
+                const labelHonest = document.getElementById('sizeLabelHonest');
+                const labelDishonest = document.getElementById('sizeLabelDishonest');
+
+                if (!compareCircle || !toggle) return;
+
+                function updateCircle() {
+                    if (toggle.checked) {
+                        compareCircle.setAttribute("r", dishonestRadius);
+                        labelDishonest.style.fontWeight = "bold";
+                        labelDishonest.style.color = "#cc0000";
+                        labelHonest.style.fontWeight = "normal";
+                        labelHonest.style.color = "#555";
+                    } else {
+                        compareCircle.setAttribute("r", honestRadius);
+                        labelHonest.style.fontWeight = "bold";
+                        labelHonest.style.color = "green";
+                        labelDishonest.style.fontWeight = "normal";
+                        labelDishonest.style.color = "#555";
+                    }
+                }
+
+                toggle.addEventListener('change', updateCircle);
+            })();
+
+            // ==========================================
+            // 7. SETUP VISUAL ENCODING LOGIC (COLOR MAPPING - PURE SVG AREA)
+            // ==========================================
+            (function initSVGColor() {
+                const area = document.getElementById('svgColorArea');
+                const toggle = document.getElementById('svgColorToggle');
+                const statusText = document.getElementById('svgColorStatus');
+                const labelHonest = document.getElementById('colorLabelHonest');
+                const labelDishonest = document.getElementById('colorLabelDishonest');
+
+                if (!area || !toggle) return;
+
+                toggle.addEventListener('change', function() {
+                    if (toggle.checked) {
+                        area.setAttribute("fill", "url(#gradDishonest)");
+                        labelDishonest.style.fontWeight = "bold";
+                        labelDishonest.style.color = "#cc0000";
+                        labelHonest.style.fontWeight = "normal";
+                        labelHonest.style.color = "#555";
+                    } else {
+                        area.setAttribute("fill", "url(#gradHonest)");
+                        labelHonest.style.fontWeight = "bold";
+                        labelHonest.style.color = "green";
+                        labelDishonest.style.fontWeight = "normal";
+                        labelDishonest.style.color = "#555";
+                    }
+                });
+            })();
 
 
 
