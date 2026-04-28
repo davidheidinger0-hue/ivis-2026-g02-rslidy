@@ -739,17 +739,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         axesHTML += `<text x="${cherryPlotX - 10}" y="${py + 5}" text-anchor="end" font-size="14" fill="#555">${valY.toFixed(2)}</text>`;
                     }
 
-                    // Dynamic X-Axis (Multiple years)
-                    const xSteps = 5;
-                    for (let i = 0; i <= xSteps; i++) {
-                        const prop = i / xSteps;
-                        const valX = curXMin + prop * (curXMax - curXMin);
-                        const px = cherryPlotX + (prop * cherryPlotW);
-                        
-                        // Add a small tick mark
+                    // Dynamic X-Axis (Smart Intervals)
+                    let span = curXMax - curXMin;
+                    // Decide tick spacing based on zoom level: every 10, 5, or 2 years
+                    let tickInterval = span > 30 ? 10 : (span > 15 ? 5 : 2);
+                    
+                    let startYear = Math.round(curXMin);
+                    let endYear = Math.round(curXMax);
+
+                    function addTick(year) {
+                        let px = cherryPlotX + ((year - curXMin) / span) * cherryPlotW;
                         axesHTML += `<line x1="${px}" y1="${cherryPlotY+cherryPlotH}" x2="${px}" y2="${cherryPlotY+cherryPlotH+5}" stroke="#555"/>`;
-                        // Add the year label
-                        axesHTML += `<text x="${px}" y="${cherryPlotY+cherryPlotH+25}" text-anchor="middle" font-size="14" fill="#555">${Math.round(valX)}</text>`;
+                        axesHTML += `<text x="${px}" y="${cherryPlotY+cherryPlotH+25}" text-anchor="middle" font-size="14" fill="#555">${year}</text>`;
+                    }
+
+                    for (let y = startYear; y <= endYear; y++) {
+                        // Always draw the exact start and end years
+                        if (y === startYear || y === endYear) {
+                            addTick(y);
+                        } 
+                        // Draw interior years on nice, even intervals
+                        else if (y % tickInterval === 0) {
+                            // Prevent text from overlapping if a tick is too close to the edges
+                            if ((y - startYear) > (tickInterval * 0.6) && (endYear - y) > (tickInterval * 0.6)) {
+                                addTick(y);
+                            }
+                        }
                     }
                     
                     cherryAxes.innerHTML = axesHTML;
