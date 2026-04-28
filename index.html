@@ -283,16 +283,29 @@
 
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
             
-            <div id="flatteningContainer" style="width: 100%; max-width: 800px; height: 35vh; position: relative;">
-                <canvas id="flatteningChart"></canvas>
+            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
+                <svg viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
+                    
+                    <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Metric Value</text>
+                    <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Month of the Year</text>
+
+                    <line x1="70" y1="20" x2="70" y2="380" stroke="#333" stroke-width="2" />
+                    <line x1="70" y1="380" x2="830" y2="380" stroke="#333" stroke-width="2" />
+
+                    <g id="svgYAxis"></g>
+
+                    <g id="svgXAxis"></g>
+                    
+                    <polyline id="svgDataLine" fill="none" stroke="#0055cc" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" points=""></polyline>
+                </svg>
             </div>
             
-            <div style="margin-top: 30px; text-align: center; width: 70%; max-width: 800px;">
+            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
                 <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 5px;">
                     <span>Steepened</span>
                     <span>Flattened</span>
                 </div>
-                <input type="range" id="flatteningSlider" min="0" max="100" value="50" style="width: 100%; cursor: pointer;">
+                <input type="range" id="svgScaleSlider" min="0" max="100" value="50" style="width: 100%; cursor: pointer;">
             </div>
             
             <div class="footnote" style="text-align: center; width: 100%;">
@@ -693,86 +706,115 @@
             // ==========================================
             // 4. SETUP FLATTENING / STEEPENING LOGIC
             // ==========================================
-            const flatLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const flatData = [50, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62]; // Data ranges from ~50 to 62
+            (function initSVGFlattening() {
+                const data = [50, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62];
+                const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                
+                // Plot Area Dimensions
+                const plotX = 70;
+                const plotY = 20;
+                const plotW = 760; // 830 - 70
+                const plotH = 360; // 380 - 20
+                const dx = plotW / (data.length - 1);
 
-            function drawFlatteningChart() {
-                const ctx3 = document.getElementById('flatteningChart').getContext('2d');
-                window.myFlatteningChart = new Chart(ctx3, {
-                    type: 'line',
-                    data: {
-                        labels: flatLabels,
-                        datasets: [{
-                            label: 'Monthly Metric',
-                            data: flatData,
-                            borderColor: '#0055cc',
-                            backgroundColor: 'rgba(0, 85, 204, 0.2)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: {
-                            duration: 100 // Tiny animation for smooth zooming
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                min: 0,
-                                max: 100,
-                                title: { display: true, text: 'Value' }
-                            },
-                            x: { title: { display: true, text: 'Month' } }
+                const line = document.getElementById('svgDataLine');
+                const slider = document.getElementById('svgScaleSlider');
+                const statusText = document.getElementById('svgStatusText');
+                const yAxisGroup = document.getElementById('svgYAxis');
+                const xAxisGroup = document.getElementById('svgXAxis');
+
+                if (!line || !slider) return;
+
+                // Draw Static X-Axis Labels
+                labels.forEach((month, index) => {
+                    const x = plotX + (index * dx);
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", x);
+                    text.setAttribute("y", plotY + plotH + 25);
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("font-size", "14");
+                    text.setAttribute("fill", "#666");
+                    text.textContent = month;
+                    xAxisGroup.appendChild(text);
+                    
+                    // Small tick mark
+                    const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    tick.setAttribute("x1", x);
+                    tick.setAttribute("y1", plotY + plotH);
+                    tick.setAttribute("x2", x);
+                    tick.setAttribute("y2", plotY + plotH + 5);
+                    tick.setAttribute("stroke", "#333");
+                    xAxisGroup.appendChild(tick);
+                });
+
+                function updateSVG() {
+                    const val = parseInt(slider.value);
+                    let yMin, yMax;
+                    let lineColor = "#0055cc";
+
+                    // Determine Math Bounds
+                    if (val <= 50) {
+                        let intensity = Math.pow((50 - val) / 50, 2);
+                        yMin = 0 + (intensity * 49);  
+                        yMax = 100 - (intensity * 37); 
+                        
+                        if (val < 20) {
+                            lineColor = "#cc0000"; 
+                        } 
+                    } else {
+                        let intensity = Math.pow((val - 50) / 50, 3);
+                        yMin = 0;
+                        yMax = 100 + (intensity * 1900); 
+                        
+                        if (val > 80) {
+                            lineColor = "#999999"; 
                         }
                     }
-                });
-            }
 
-            // Slider Interaction Logic (Manipulating Axes)
-            const flatteningSlider = document.getElementById('flatteningSlider');
-            const flatteningStatus = document.getElementById('flatteningStatus');
+                    // Generate Dynamic Y-Axis Grid & Labels
+                    yAxisGroup.innerHTML = ''; // Clear old labels
+                    const numTicks = 5;
+                    for (let i = 0; i < numTicks; i++) {
+                        const proportion = i / (numTicks - 1);
+                        const currentYValue = yMin + ((yMax - yMin) * proportion);
+                        const yPos = (plotY + plotH) - (proportion * plotH);
 
-            if (flatteningSlider) {
-                flatteningSlider.addEventListener('input', function(e) {
-                    const val = parseInt(e.target.value); // 0 to 100
-                    let newMin, newMax;
+                        // Grid Line
+                        const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                        gridLine.setAttribute("x1", plotX);
+                        gridLine.setAttribute("y1", yPos);
+                        gridLine.setAttribute("x2", plotX + plotW);
+                        gridLine.setAttribute("y2", yPos);
+                        gridLine.setAttribute("stroke", "#eee");
+                        yAxisGroup.appendChild(gridLine);
 
-                    if (val < 50) {
-                        // Steepening: Zooming in closer to the data (45 to 65)
-                        let ratio = val / 50; 
-                        newMin = 45 - (ratio * 45); // Scales down to 0
-                        newMax = 65 + (ratio * 35); // Scales up to 100
-                    } else {
-                        // Flattening: Zooming way out (0 to 500)
-                        let ratio = (val - 50) / 50;
-                        newMin = 0;
-                        newMax = 100 + (ratio * 400); // Scales up to 500
+                        // Text Label
+                        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        text.setAttribute("x", plotX - 10);
+                        text.setAttribute("y", yPos + 5);
+                        text.setAttribute("text-anchor", "end");
+                        text.setAttribute("font-size", "14");
+                        text.setAttribute("fill", "#666");
+                        // Format large numbers nicely (e.g., 1k instead of 1000 if it gets huge)
+                        text.textContent = currentYValue >= 1000 ? Math.round(currentYValue/1000) + 'k' : Math.round(currentYValue);
+                        yAxisGroup.appendChild(text);
                     }
 
-                    // Apply the new scales to the chart
-                    if (window.myFlatteningChart) {
-                        window.myFlatteningChart.options.scales.y.min = newMin;
-                        window.myFlatteningChart.options.scales.y.max = newMax;
-                        window.myFlatteningChart.update();
-                    }
+                    // Generate Data Line Points
+                    const pointsString = data.map((val, index) => {
+                        const x = plotX + (index * dx);
+                        const normalizedY = (val - yMin) / (yMax - yMin);
+                        const y = (plotY + plotH) - (normalizedY * plotH);
+                        return `${x},${y}`;
+                    }).join(" ");
 
-                    // Update Status Text
-                    if (val < 30) {
-                        flatteningStatus.innerText = "Steepened (Dishonest)";
-                        flatteningStatus.style.color = "red";
-                    } else if (val > 70) {
-                        flatteningStatus.innerText = "Flattened (Dishonest)";
-                        flatteningStatus.style.color = "red";
-                    } else {
-                        flatteningStatus.innerText = "Honest Scale";
-                        flatteningStatus.style.color = "green";
-                    }
-                });
-            }
+                    line.setAttribute("points", pointsString);
+                    line.setAttribute("stroke", lineColor);
+                }
 
+                slider.addEventListener('input', updateSVG);
+                updateSVG(); // Initial Draw
+            })();
 
             // ==========================================
             // 5. SETUP OVERSMOOTHING DATA & LOGIC
