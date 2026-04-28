@@ -241,6 +241,29 @@
     </div>
 
     <div class="slide">
+        <h1>Artificial Flattening / Steepening Demo</h1>
+
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
+            
+            <div id="flatteningContainer" style="width: 100%; max-width: 800px; height: 35vh; position: relative;">
+                <canvas id="flatteningChart"></canvas>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center; width: 70%; max-width: 800px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 5px;">
+                    <span>Steepened</span>
+                    <span>Flattened</span>
+                </div>
+                <input type="range" id="flatteningSlider" min="0" max="100" value="50" style="width: 100%; cursor: pointer;">
+            </div>
+            
+            <div class="footnote" style="text-align: center; width: 100%;">
+                Interactive chart created by the authors.
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
         <h1>Time Gap</h1>
         <ul style="font-size: 1.4em; line-height: 1.6;">
             <li>Using uneven or irregular time intervals on continuous axis but spacing them evenly.</li>
@@ -501,7 +524,77 @@
             };
 
             // ==========================================
-            // 3. CANVAS OBSERVERS
+            // 3. SETUP FLATTENING / STEEPENING LOGIC
+            // ==========================================
+            const flatLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const flatData = [50, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62]; // Data ranges from ~50 to 62
+
+            function drawFlatteningChart() {
+                const ctx3 = document.getElementById('flatteningChart').getContext('2d');
+                window.myFlatteningChart = new Chart(ctx3, {
+                    type: 'line',
+                    data: {
+                        labels: flatLabels,
+                        datasets: [{
+                            label: 'Monthly Metric',
+                            data: flatData,
+                            borderColor: '#0055cc',
+                            backgroundColor: 'rgba(0, 85, 204, 0.2)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 100 // Tiny animation for smooth zooming
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 0,
+                                max: 100,
+                                title: { display: true, text: 'Value' }
+                            },
+                            x: { title: { display: true, text: 'Month' } }
+                        }
+                    }
+                });
+            }
+
+            // Slider Interaction Logic (Manipulating Axes)
+            const flatteningSlider = document.getElementById('flatteningSlider');
+
+            if (flatteningSlider) {
+                flatteningSlider.addEventListener('input', function(e) {
+                    const val = parseInt(e.target.value); // 0 to 100
+                    let newMin, newMax;
+
+                    if (val < 50) {
+                        // Steepening: Zooming in closer to the data (45 to 65)
+                        let ratio = val / 50; 
+                        newMin = 45 - (ratio * 45); // Scales down to 0
+                        newMax = 65 + (ratio * 35); // Scales up to 100
+                    } else {
+                        // Flattening: Zooming way out (0 to 500)
+                        let ratio = (val - 50) / 50;
+                        newMin = 0;
+                        newMax = 100 + (ratio * 400); // Scales up to 500
+                    }
+
+                    // Apply the new scales to the chart
+                    if (window.myFlatteningChart) {
+                        window.myFlatteningChart.options.scales.y.min = newMin;
+                        window.myFlatteningChart.options.scales.y.max = newMax;
+                        window.myFlatteningChart.update();
+                    }
+                });
+            }
+
+            // ==========================================
+            // CANVAS OBSERVERS
             // ==========================================
             
             const canvas1 = document.getElementById('climateChart');
@@ -521,6 +614,15 @@
                 }
             });
             if (canvas2) observer2.observe(canvas2);
+
+            const canvas3 = document.getElementById('flatteningChart');
+            const observer3 = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    drawFlatteningChart();             
+                    observer3.disconnect();   
+                }
+            });
+            if (canvas3) observer3.observe(canvas3);
 
         });
     </script>
