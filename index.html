@@ -267,38 +267,59 @@
     <div class="slide">
         <h1 style="margin-bottom: 2rem;">Axis Truncation Demo</h1>
 
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 1.5rem;">
+            Move the slider to truncate the y-axis. The data stays exactly the same.
+        </p>
 
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
 
-            <div style="width: 100%; max-width: 800px; height: 42vh; position: relative; margin-bottom: 2rem;">
-                <canvas id="axisTruncationChart"></canvas>
-            </div>
+            <svg id="axisSVG" width="500" height="300">
+                <line x1="80" y1="250" x2="450" y2="250" stroke="black"/>
+                <line x1="80" y1="50" x2="80" y2="250" stroke="black"/>
 
-            
-            <div style="width: 20%; text-align: center; margin-bottom: 1.5rem;">
-                <label for="axisSlider" style="font-size: 1.1em;">
-                    Y-axis starts at: <span id="axisSliderValue">0</span>
+                <line x1="75" y1="250" x2="80" y2="250" stroke="black"/>
+                <line x1="75" y1="150" x2="80" y2="150" stroke="black"/>
+                <line x1="75" y1="50" x2="80" y2="50" stroke="black"/>
+
+                <text id="y0" x="70" y="254" text-anchor="end" font-size="12">0</text>
+                <text id="y50" x="70" y="154" text-anchor="end" font-size="12">50</text>
+                <text id="y100" x="70" y="54" text-anchor="end" font-size="12">100</text>
+
+                <rect id="barA" x="150" y="76" width="60" height="174" fill="#7dbce8"/>
+                <rect id="barB" x="280" y="59" width="60" height="191" fill="#f28ca8"/>
+
+                <text x="180" y="275" text-anchor="middle" font-size="14">Product A</text>
+                <text x="310" y="275" text-anchor="middle" font-size="14">Product B</text>
+
+                <text id="labelA" x="180" y="68" text-anchor="middle" font-size="13">100</text>
+                <text id="labelB" x="310" y="51" text-anchor="middle" font-size="13">110</text>
+
+                <text x="265" y="295" text-anchor="middle" font-size="12">Same values: 100 vs. 110</text>
+            </svg>
+
+            <div style="margin-top: 1.2rem; text-align: center; width: 100%;">
+                <label for="svgSlider" style="font-size: 1.1em;">
+                    Y-axis starts at: <span id="sliderValue">0</span>
                 </label>
                 <br>
                 <input 
-                    id="axisSlider" 
                     type="range" 
+                    id="svgSlider" 
                     min="0" 
                     max="95" 
                     value="0" 
                     step="5"
-                    style="width: 100%; margin-top: 0.8rem;"
+                    style="width: 100%; max-width: 300px; margin-top: 0.5rem;"
                 >
             </div>
 
-            <p id="axisTruncationMessage" style="font-size: 1.1em; text-align: center; margin-bottom: 1.5rem;">
-                Full axis: the difference looks small and proportional.
+            <p id="svgMessage" style="text-align: center; margin-top: 1rem; font-size: 1.1em;">
+                Full axis: the difference looks proportional.
             </p>
 
-            <div class="footnote" style="text-align: center;">
-                Interactive chart created by the authors.
+            <div class="footnote" style="text-align: center; width: 100%;">
+                Interactive SVG created by the authors.
             </div>
-
         </div>
     </div>
 
@@ -893,76 +914,64 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ==========================================
-            // 3. SETUP AXIS TRUNCATION DATA & LOGIC
+            // SVG AXIS TRUNCATION DEMO
             // ==========================================
 
-            const axisLabels = ['Product A', 'Product B'];
-            const axisValues = [100, 110];
+            const svgSlider = document.getElementById('svgSlider');
 
-            function drawAxisTruncationChart() {
-                const ctx3 = document.getElementById('axisTruncationChart').getContext('2d');
+            if (svgSlider) {
+                const barA = document.getElementById('barA');
+                const barB = document.getElementById('barB');
+                const labelA = document.getElementById('labelA');
+                const labelB = document.getElementById('labelB');
 
-                window.myAxisChart = new Chart(ctx3, {
-                    type: 'bar',
-                    data: {
-                        labels: axisLabels,
-                        datasets: [{
-                            label: 'Customer Satisfaction Score',
-                            data: axisValues,
-                            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-                            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: false,
-                        scales: {
-                            y: {
-                                min: 0,
-                                max: 115,
-                                title: {
-                                    display: true,
-                                    text: 'Score'
-                                }
-                            }
-                        },
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Same data, full y-axis'
-                            },
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
+                const sliderValue = document.getElementById('sliderValue');
+                const message = document.getElementById('svgMessage');
 
-                const slider = document.getElementById('axisSlider');
-                const sliderValue = document.getElementById('axisSliderValue');
-                const message = document.getElementById('axisTruncationMessage');
+                const y0 = document.getElementById('y0');
+                const y50 = document.getElementById('y50');
+                const y100 = document.getElementById('y100');
 
-                slider.addEventListener('input', function () {
-                    const yMin = Number(this.value);
+                const valueA = 100;
+                const valueB = 110;
+                const baseY = 250;
+                const topY = 50;
+                const chartHeight = baseY - topY;
+                const yMax = 115;
 
-                    sliderValue.innerText = yMin;
-                    window.myAxisChart.options.scales.y.min = yMin;
+                function updateAxisTruncationSVG() {
+                    const yMin = Number(svgSlider.value);
+                    const visibleRange = yMax - yMin;
+
+                    sliderValue.textContent = yMin;
+
+                    const heightA = ((valueA - yMin) / visibleRange) * chartHeight;
+                    const heightB = ((valueB - yMin) / visibleRange) * chartHeight;
+
+                    barA.setAttribute('y', baseY - heightA);
+                    barA.setAttribute('height', heightA);
+
+                    barB.setAttribute('y', baseY - heightB);
+                    barB.setAttribute('height', heightB);
+
+                    labelA.setAttribute('y', baseY - heightA - 8);
+                    labelB.setAttribute('y', baseY - heightB - 8);
+
+                    y0.textContent = yMin;
+                    y50.textContent = Math.round(yMin + visibleRange / 2);
+                    y100.textContent = yMax;
 
                     if (yMin === 0) {
-                        window.myAxisChart.options.plugins.title.text = 'Same data, full y-axis';
-                        message.innerText = 'Full axis: the difference looks small and proportional.';
+                        message.textContent = 'Full axis: the difference looks proportional.';
                     } else if (yMin < 60) {
-                        window.myAxisChart.options.plugins.title.text = 'Same data, mildly truncated y-axis';
-                        message.innerText = 'The difference starts to look more important.';
+                        message.textContent = 'The y-axis is slightly truncated. The difference starts to look larger.';
                     } else {
-                        window.myAxisChart.options.plugins.title.text = 'Same data, strongly truncated y-axis';
-                        message.innerText = 'Now Product B appears much larger, although the values are still only 100 and 110.';
+                        message.textContent = 'The data is unchanged, but the difference now looks dramatically larger.';
                     }
+                }
 
-                    window.myAxisChart.update();
-                });
+                svgSlider.addEventListener('input', updateAxisTruncationSVG);
+                updateAxisTruncationSVG();
             }
 
             // ==========================================
