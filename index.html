@@ -411,33 +411,59 @@
     <div class="slide">
         <h1 style="margin-bottom: 2rem;">Oversmoothing Demo</h1>
 
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <div style="width: 100%; max-width: 850px; height: 42vh; position: relative; margin-bottom: 1.5rem;">
-                <canvas id="oversmoothingChart"></canvas>
-            </div>
 
-            <div style="width: 100%; max-width: 400px; margin: 0 auto 1.5rem auto; text-align: center;">
-                <label for="smoothingSlider" style="font-size: 1.1em;">
-                    Smoothing window: <span id="smoothingSliderValue">1</span>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+
+            <svg id="oversmoothingSvg" width="850" height="420" viewBox="0 0 850 420">
+                <rect x="0" y="0" width="850" height="420" fill="white"/>
+
+                <line x1="70" y1="340" x2="800" y2="340" stroke="black" stroke-width="2"/>
+                <line x1="70" y1="40" x2="70" y2="340" stroke="black" stroke-width="2"/>
+
+                <text x="425" y="390" text-anchor="middle" font-size="16">Time</text>
+                <text x="20" y="190" text-anchor="middle" font-size="16" transform="rotate(-90 20 190)">Value</text>
+
+                <polyline id="rawLine"
+                    fill="none"
+                    stroke="rgba(120,120,120,0.6)"
+                    stroke-width="2"
+                    points=""
+                />
+
+                <polyline id="smoothLine"
+                    fill="none"
+                    stroke="crimson"
+                    stroke-width="4"
+                    points=""
+                />
+
+                <text id="oversmoothingTitle" x="425" y="25" text-anchor="middle" font-size="18" font-weight="bold">
+                    Raw data with minimal smoothing
+                </text>
+            </svg>
+
+            <div style="width: 100%; max-width: 400px; text-align: center; margin-top: 1rem;">
+                <label for="smoothingSvgSlider" style="font-size: 1.1em;">
+                    Smoothing window: <span id="smoothingSvgValue">1</span>
                 </label>
                 <br>
                 <input 
-                    id="smoothingSlider" 
-                    type="range" 
-                    min="1" 
-                    max="15" 
-                    value="1" 
+                    id="smoothingSvgSlider"
+                    type="range"
+                    min="1"
+                    max="15"
+                    value="1"
                     step="2"
                     style="width: 90%; margin-top: 0.8rem;"
                 >
             </div>
 
-            <p id="oversmoothingMessage" style="font-size: 1.1em; text-align: center; margin-bottom: 1.5rem;">
+            <p id="oversmoothingSvgMessage" style="font-size: 1.1em; text-align: center;">
                 Low smoothing: short-term fluctuations are still visible.
             </p>
 
             <div class="footnote" style="text-align: center;">
-                Interactive chart created by the authors.
+                Interactive SVG created by the authors.
             </div>
         </div>
     </div>
@@ -578,14 +604,23 @@
         </ul>
     </div>
 
+
+
     <div class="slide">
         <h1 style="margin-bottom: 2rem;">Perspective Distortion Demo</h1>
 
 
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <svg id="perspectivePie" width="720" height="420" viewBox="0 0 720 420"></svg>
+            <svg 
+                id="perspectivePieSvg" 
+                width="45rem" 
+                height="26rem" 
+                viewBox="0 0 720 420"
+                style="margin-bottom: 1rem;"
+            >
+            </svg>
 
-            <div style="width: 100%; max-width: 400px; margin: 0 auto 1.2rem auto; text-align: center;">
+            <div style="width: 100%; max-width: 25rem; margin: 0 auto 1.2rem auto; text-align: center;">
                 <label for="tiltSlider" style="font-size: 1.1em;">
                     Perspective tilt: <span id="tiltSliderValue">0</span>%
                 </label>
@@ -606,29 +641,8 @@
             </p>
 
             <div class="footnote" style="text-align: center;">
-                Interactive chart created by the authors.
+                Interactive SVG chart created by the authors.
             </div>
-        </div>
-    </div>
-
-    <div class="slide">
-        <h1>Perspective Distortion Example</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 60%;">
-                <ul>
-                    <li><strong>Context:</strong> Apple Macworld Keynote (2008).</li>
-                    <li><strong>Misuse:</strong> 3D tilt pushes the 19.5% slice into the middle.</li>
-                    <li><strong>Effect:</strong> Perspective distortion makes 19.5% appear physically larger than 21.2%.</li>
-                </ul>
-            </div>
-            <div style="width: 35%; text-align: center;">
-                <img src="images/perspective_distortion.png" alt="3D Distortion Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
-            </div>
-        </div>
-        <div class="footnote">
-            Apple (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
-            Retrieved from <a href="https://paragraft.wordpress.com/tag/infovis/" target="_blank">https://paragraft.wordpress.com/tag/infovis/</a>
         </div>
     </div>
 
@@ -1065,19 +1079,17 @@ document.addEventListener('DOMContentLoaded', function() {
             })();
 
             // ==========================================
-            // 5. SETUP OVERSMOOTHING DATA & LOGIC
+            // OVERSMOOTHING SVG DEMO
             // ==========================================
 
-            const oversmoothingLabels = Array.from({ length: 40 }, (_, i) => i + 1);
-
-            const rawOversmoothingData = [
+            const svgRawData = [
                 50, 52, 49, 55, 53, 70, 52, 48, 51, 50,
                 49, 47, 30, 48, 51, 53, 55, 54, 52, 50,
                 51, 53, 75, 54, 52, 50, 49, 51, 50, 48,
                 47, 46, 45, 58, 44, 43, 42, 41, 40, 39
             ];
 
-            function movingAverage(data, windowSize) {
+            function svgMovingAverage(data, windowSize) {
                 if (windowSize <= 1) return data;
 
                 return data.map((value, index) => {
@@ -1085,93 +1097,60 @@ document.addEventListener('DOMContentLoaded', function() {
                     const start = Math.max(0, index - halfWindow);
                     const end = Math.min(data.length, index + halfWindow + 1);
                     const subset = data.slice(start, end);
-                    const sum = subset.reduce((total, current) => total + current, 0);
-                    return sum / subset.length;
+                    return subset.reduce((sum, current) => sum + current, 0) / subset.length;
                 });
             }
 
-            function drawOversmoothingChart() {
-                const ctx4 = document.getElementById('oversmoothingChart').getContext('2d');
+            function dataToSvgPoints(data) {
+                const xMin = 70;
+                const xMax = 800;
+                const yMin = 40;
+                const yMax = 340;
 
-                window.myOversmoothingChart = new Chart(ctx4, {
-                    type: 'line',
-                    data: {
-                        labels: oversmoothingLabels,
-                        datasets: [
-                            {
-                                label: 'Raw data',
-                                data: rawOversmoothingData,
-                                borderColor: 'rgba(120, 120, 120, 0.5)',
-                                backgroundColor: 'rgba(120, 120, 120, 0.15)',
-                                borderWidth: 1,
-                                pointRadius: 3,
-                                tension: 0
-                            },
-                            {
-                                label: 'Smoothed line',
-                                data: rawOversmoothingData,
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                backgroundColor: 'rgba(255, 99, 132, 0.15)',
-                                borderWidth: 3,
-                                pointRadius: 0,
-                                tension: 0.3
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        animation: false,
-                        scales: {
-                            y: {
-                                min: 20,
-                                max: 80,
-                                title: {
-                                    display: true,
-                                    text: 'Value'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Time'
-                                }
-                            }
-                        },
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Raw data with minimal smoothing'
-                            }
-                        }
-                    }
-                });
+                const dataMin = 20;
+                const dataMax = 80;
 
-                const slider = document.getElementById('smoothingSlider');
-                const sliderValue = document.getElementById('smoothingSliderValue');
-                const message = document.getElementById('oversmoothingMessage');
+                return data.map((value, index) => {
+                    const x = xMin + (index / (data.length - 1)) * (xMax - xMin);
+                    const y = yMax - ((value - dataMin) / (dataMax - dataMin)) * (yMax - yMin);
+                    return `${x},${y}`;
+                }).join(" ");
+            }
 
-                slider.addEventListener('input', function () {
+            function initOversmoothingSvg() {
+                const rawLine = document.getElementById("rawLine");
+                const smoothLine = document.getElementById("smoothLine");
+                const slider = document.getElementById("smoothingSvgSlider");
+                const sliderValue = document.getElementById("smoothingSvgValue");
+                const title = document.getElementById("oversmoothingTitle");
+                const message = document.getElementById("oversmoothingSvgMessage");
+
+                if (!rawLine || !smoothLine || !slider) return;
+
+                rawLine.setAttribute("points", dataToSvgPoints(svgRawData));
+                smoothLine.setAttribute("points", dataToSvgPoints(svgRawData));
+
+                slider.addEventListener("input", function () {
                     const windowSize = Number(this.value);
-                    const smoothedData = movingAverage(rawOversmoothingData, windowSize);
+                    const smoothedData = svgMovingAverage(svgRawData, windowSize);
 
                     sliderValue.innerText = windowSize;
-                    window.myOversmoothingChart.data.datasets[1].data = smoothedData;
+                    smoothLine.setAttribute("points", dataToSvgPoints(smoothedData));
 
                     if (windowSize <= 3) {
-                        window.myOversmoothingChart.options.plugins.title.text = 'Low smoothing: local variation remains visible';
-                        message.innerText = 'Low smoothing: short-term fluctuations are still visible.';
+                        title.textContent = "Low smoothing: local variation remains visible";
+                        message.textContent = "Low smoothing: short-term fluctuations are still visible.";
                     } else if (windowSize <= 9) {
-                        window.myOversmoothingChart.options.plugins.title.text = 'Moderate smoothing: fluctuations become less visible';
-                        message.innerText = 'Moderate smoothing: peaks and dips are reduced.';
+                        title.textContent = "Moderate smoothing: peaks and dips are reduced";
+                        message.textContent = "Moderate smoothing: fluctuations become less visible.";
                     } else {
-                        window.myOversmoothingChart.options.plugins.title.text = 'Oversmoothing: important local patterns are hidden';
-                        message.innerText = 'High smoothing: spikes and drops almost disappear, creating a cleaner but less truthful story.';
+                        title.textContent = "Oversmoothing: important local patterns are hidden";
+                        message.textContent = "High smoothing: spikes and drops almost disappear.";
                     }
-
-                    window.myOversmoothingChart.update();
                 });
             }
+
+            initOversmoothingSvg();
             // ==========================================
             // 5. SETUP TIME GAP LOGIC (BAR CHART - EXTREME)
             // ==========================================
@@ -1320,7 +1299,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })();
 
             // ==========================================
-            // 8. SETUP PERSPECTIVE DISTORTION DATA & LOGIC
+            // PERSPECTIVE DISTORTION SVG DEMO
             // ==========================================
 
             const perspectiveData = [
@@ -1330,17 +1309,18 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
 
             function polarToCartesian(cx, cy, rx, ry, angleDegrees) {
-                const angleRadians = (angleDegrees - 90) * Math.PI / 180.0;
+                const angleRadians = (angleDegrees - 90) * Math.PI / 180;
+
                 return {
-                    x: cx + (rx * Math.cos(angleRadians)),
-                    y: cy + (ry * Math.sin(angleRadians))
+                    x: cx + rx * Math.cos(angleRadians),
+                    y: cy + ry * Math.sin(angleRadians)
                 };
             }
 
             function describeSlice(cx, cy, rx, ry, startAngle, endAngle) {
                 const start = polarToCartesian(cx, cy, rx, ry, endAngle);
                 const end = polarToCartesian(cx, cy, rx, ry, startAngle);
-                const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+                const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
 
                 return [
                     "M", cx, cy,
@@ -1350,8 +1330,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 ].join(" ");
             }
 
-            function drawPerspectivePie(tilt) {
-                const svg = document.getElementById('perspectivePie');
+            function createSvgElement(type, attributes) {
+                const element = document.createElementNS("http://www.w3.org/2000/svg", type);
+
+                Object.entries(attributes).forEach(([key, value]) => {
+                    element.setAttribute(key, value);
+                });
+
+                return element;
+            }
+
+            function drawPerspectivePieSvg(tilt) {
+                const svg = document.getElementById('perspectivePieSvg');
                 svg.innerHTML = '';
 
                 const cx = 360;
@@ -1360,54 +1350,71 @@ document.addEventListener('DOMContentLoaded', function() {
                 const ry = 150 - tilt;
                 const depth = tilt * 0.45;
 
+                if (tilt > 0) {
+                    const bottomEllipse = createSvgElement('ellipse', {
+                        cx: cx,
+                        cy: cy + depth,
+                        rx: rx,
+                        ry: ry,
+                        fill: '#777',
+                        opacity: '0.22'
+                    });
+
+                    svg.appendChild(bottomEllipse);
+                }
+
                 let currentAngle = 0;
 
                 perspectiveData.forEach(slice => {
-                    const sliceAngle = (slice.value / 100) * 360;
+                    const sliceAngle = slice.value / 100 * 360;
                     const startAngle = currentAngle;
                     const endAngle = currentAngle + sliceAngle;
 
-                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    path.setAttribute('d', describeSlice(cx, cy, rx, ry, startAngle, endAngle));
-                    path.setAttribute('fill', slice.color);
-                    path.setAttribute('stroke', '#ffffff');
-                    path.setAttribute('stroke-width', '2');
+                    const path = createSvgElement('path', {
+                        d: describeSlice(cx, cy, rx, ry, startAngle, endAngle),
+                        fill: slice.color,
+                        stroke: '#ffffff',
+                        'stroke-width': 2
+                    });
 
                     svg.appendChild(path);
 
                     const midAngle = startAngle + sliceAngle / 2;
-                    const labelPos = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
+                    const labelPosition = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
 
-                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    text.setAttribute('x', labelPos.x);
-                    text.setAttribute('y', labelPos.y);
-                    text.setAttribute('text-anchor', 'middle');
-                    text.setAttribute('dominant-baseline', 'middle');
-                    text.setAttribute('font-size', '18');
-                    text.setAttribute('font-weight', 'bold');
-                    text.textContent = `${slice.label}: ${slice.value}%`;
+                    const label = createSvgElement('text', {
+                        x: labelPosition.x,
+                        y: labelPosition.y,
+                        'text-anchor': 'middle',
+                        'dominant-baseline': 'middle',
+                        'font-size': 18,
+                        'font-weight': 'bold',
+                        fill: '#222'
+                    });
 
-                    svg.appendChild(text);
+                    label.textContent = `${slice.label}: ${slice.value}%`;
+                    svg.appendChild(label);
 
                     currentAngle = endAngle;
                 });
 
-                if (tilt > 0) {
-                    const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-                    shadow.setAttribute('cx', cx);
-                    shadow.setAttribute('cy', cy + depth + 8);
-                    shadow.setAttribute('rx', rx);
-                    shadow.setAttribute('ry', ry);
-                    shadow.setAttribute('fill', 'none');
-                    shadow.setAttribute('stroke', '#777');
-                    shadow.setAttribute('stroke-width', depth);
-                    shadow.setAttribute('opacity', '0.35');
-                    svg.insertBefore(shadow, svg.firstChild);
-                }
+                const caption = createSvgElement('text', {
+                    x: 360,
+                    y: 380,
+                    'text-anchor': 'middle',
+                    'font-size': 16,
+                    fill: '#555'
+                });
+
+                caption.textContent = tilt === 0
+                    ? 'Honest 2D pie chart'
+                    : 'Tilted pie chart: same values, distorted appearance';
+
+                svg.appendChild(caption);
             }
 
             function initPerspectiveDistortionDemo() {
-                drawPerspectivePie(0);
+                drawPerspectivePieSvg(0);
 
                 const slider = document.getElementById('tiltSlider');
                 const sliderValue = document.getElementById('tiltSliderValue');
@@ -1417,7 +1424,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const tilt = Number(this.value);
 
                     sliderValue.innerText = tilt;
-                    drawPerspectivePie(tilt);
+                    drawPerspectivePieSvg(tilt);
 
                     if (tilt === 0) {
                         message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
@@ -1428,7 +1435,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-
             // ==========================================
             // 9. SETUP CONCEALING UNCERTAINTY 
             // ==========================================
@@ -1572,14 +1578,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (canvas4) observer4.observe(canvas4);
 
-            const canvas5 = document.getElementById('oversmoothingChart');
+            /*const canvas5 = document.getElementById('oversmoothingChart');
             const observer5 = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
                     drawOversmoothingChart();
                     observer5.disconnect();
                 }
             });
-            if (canvas5) observer5.observe(canvas5);
+            if (canvas5) observer5.observe(canvas5);*/
 
             const canvas6 = document.getElementById('timeGapChart');
             const observer6 = new IntersectionObserver((entries) => {
@@ -1590,14 +1596,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (canvas6) observer6.observe(canvas6);
 
-            const perspectiveDemo = document.getElementById('perspectivePie');
+            const perspectiveSvg = document.getElementById('perspectivePieSvg');
             const observerPerspective = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
                     initPerspectiveDistortionDemo();
                     observerPerspective.disconnect();
                 }
             });
-            if (perspectiveDemo) observerPerspective.observe(perspectiveDemo);
+            if (perspectiveSvg) observerPerspective.observe(perspectiveSvg);
         });
     </script>
 </body>
