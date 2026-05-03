@@ -1295,7 +1295,8 @@
                     svg.appendChild(createSvgElement('ellipse', { cx: cx, cy: cy + depth, rx: rx, ry: ry, fill: '#777', opacity: '0.22' }));
                 }
 
-                let currentAngle = 0;
+                // current angle changed to have the 19.5% appear at the bottom
+                let currentAngle = 68.58;
                 perspectiveData.forEach(slice => {
                     const sliceAngle = slice.value / 100 * 360;
                     const endAngle = currentAngle + sliceAngle;
