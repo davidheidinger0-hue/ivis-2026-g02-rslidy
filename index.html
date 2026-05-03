@@ -10,87 +10,106 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Allow Rslidy to handle theme/sizing naturally */
-        a { color: #0055cc !important; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        :root {
+            --primary-color: #0055cc;
+            --danger-color: #cc0000;
+            --success-color: green;
+            --text-main: #333;
+            --text-muted: #555;
+            --text-light: #888;
+        }
         
-        /* Unified footnote class to sit directly under content */
-        .footnote {
-            font-size: 0.7em; 
-            color: #555;
-            margin-top: 1.5em;
-        }
-        /* Modern Toggle Switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            margin: 0 15px;
-        }
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider-toggle {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: green; /* Honest state */
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider-toggle:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider-toggle {
-            background-color: #cc0000; /* Dishonest state */
-        }
-        input:checked + .slider-toggle:before {
-            transform: translateX(26px);
-        }
+        a { color: var(--primary-color) !important; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .slide h1 { font-size: 3.5rem; margin-bottom: 1.5rem; }
+        .slide h2 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        
+        .list-large { font-size: 1.6rem; line-height: 1.8; }
+        .text-center { text-align: center; }
+        .text-bold { font-weight: bold; }
+        .text-muted { color: var(--text-muted); }
+        .text-light { color: var(--text-light); }
+        .text-danger { color: var(--danger-color); }
+        .text-success { color: var(--success-color); }
+        .subtext { font-size: 1.2rem; margin-bottom: 1.5rem; text-align: center; }
+        
+        .caption { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic; }
+        .footnote { font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem; text-align: center; width: 100%; }
+        .footnote-left { text-align: left; }
+
+        .slide.cover { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; }
+        .slide.cover h1 { font-size: 5.5rem; margin-bottom: 0.5rem; }
+        
+        .flex-col-center { display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center; }
+        .flex-row-between { display: flex; justify-content: space-between; font-size: 1.4rem; line-height: 1.6; width: 100%; }
+        .flex-row-around { display: flex; justify-content: space-around; font-size: 1.4rem; line-height: 1.6; margin-top: 3rem; }
+        
+        .col-text { width: 55%; }
+        .col-image { width: 40%; text-align: center; }
+        .col-half { width: 45%; }
+        
+        .example-img { max-height: 45vh; max-width: 100%; object-fit: contain; }
+
+        .demo-wrapper { width: 100%; max-width: 50rem; margin-bottom: 1.5rem; position: relative; }
+        .demo-controls { margin-top: 1rem; text-align: center; width: 70%; max-width: 50rem; }
+        .control-row { display: flex; justify-content: space-between; font-size: 1rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .range-slider { width: 100%; cursor: pointer; margin-top: 1rem; }
+
+        svg.demo-svg { width: 100%; height: auto; overflow: visible; font-family: sans-serif; }
+        svg.demo-svg-box { background-color: #ffffff; border-radius: 0.5rem; padding: 0.6rem; }
+
+        .switch-container { display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--text-muted); }
+        .switch-label-left { display: inline-block; width: 12.5rem; text-align: right; }
+        .switch-label-right { display: inline-block; width: 12.5rem; text-align: left; }
+
+        .switch { position: relative; display: inline-block; width: 3.75rem; height: 2.125rem; margin: 0 1rem; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--success-color); transition: .4s; border-radius: 2.125rem; }
+        .slider-toggle:before { position: absolute; content: ""; height: 1.625rem; width: 1.625rem; left: 0.25rem; bottom: 0.25rem; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider-toggle { background-color: var(--danger-color); }
+        input:checked + .slider-toggle:before { transform: translateX(1.625rem); }
     </style>
 </head>
 <body>
 
-    <div class="slide">
-        <div style="text-align: center; margin-top: 10%;">
-            <h1 style="font-size: 3em; margin-bottom: 0.2em;">Dishonest Chart Techniques</h1>
+    <div class="slide cover" style="box-sizing: border-box; padding: 0 4rem;">
+        
+        <!-- Centered Title Block -->
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h1>Dishonest Chart Techniques</h1>
             <h2>Group 2: Lukas Auer, David Heidinger, Nina Tschikof and Christina Vogel</h2>
-            <p>6 May 2026<br>Information Visualisation SS 2026</p>
-            
-            <p style="font-size: 0.7em; margin-top: 4em; color: #555;">
+        </div>
+        
+        <!-- Left-Aligned Metadata Block (sits naturally below the title) -->
+        <div style="width: 100%; text-align: left;">
+            <p class="list-large" style="margin-bottom: 1rem; line-height: 1.4;">
+                6 May 2026<br>Information Visualisation SS 2026
+            </p>
+            <p class="footnote footnote-left" style="margin: 0; width: auto;">
                 Copyright 2026 by the author(s), except as otherwise noted.<br>
                 This work is placed under a Creative Commons Attribution 4.0 International (CC BY 4.0) licence.
             </p>
         </div>
+        
     </div>
 
     <div class="slide">
         <h1>Overview</h1>
-        <ol style="font-size: 1.5em; line-height: 1.8;">
+        <ol class="list-large">
             <li>Background and Motivation</li>
             <li>Taxonomy of Dishonest Chart Techniques</li>
             <li>Related Work</li>
         </ol>
     </div>
 
-    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-        <h1 style="font-size: 4em; text-align: center;">Background and Motivation</h1>
+    <div class="slide cover">
+        <h1>Background and Motivation</h1>
     </div>
 
     <div class="slide">
         <h1>Dishonest Charts</h1>
-        <ul style="font-size: 1.3em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Visualizations can convey a misleading impression.</li>
             <li>Occur by accident or design.</li>
             <li>Data is always biased and never objective or neutral.</li>
@@ -105,14 +124,14 @@
         </ul>
     </div>
 
-    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-        <h1 style="font-size: 4em; text-align: center;">Taxonomy of Dishonest Chart Techniques</h1>
+    <div class="slide cover">
+        <h1>Taxonomy of Dishonest Chart Techniques</h1>
     </div>
 
     <div class="slide">
         <h1>9 Dishonest Chart Techniques</h1>
-        <div style="display: flex; justify-content: space-around; font-size: 1.4em; line-height: 1.6; margin-top: 50px;">
-            <div style="width: 45%;">
+        <div class="flex-row-around">
+            <div class="col-half">
                 <ul>
                     <li>Cherry Picking</li>
                     <li>Underbinning</li>
@@ -121,7 +140,7 @@
                     <li>Oversmoothing</li>
                 </ul>
             </div>
-            <div style="width: 45%;">
+            <div class="col-half">
                 <ul>
                     <li>Artificial Flattening or Steepening</li>
                     <li>Manipulating the Visual Encoding</li>
@@ -134,7 +153,7 @@
 
     <div class="slide">
         <h1>Cherry Picking</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Selecting only specific data points, groups, or timeframes that support desired outcome.</li>
             <li>Deliberately hides broader context or opposing trends.
                 <ul>
@@ -146,9 +165,9 @@
 
     <div class="slide">
         <h1>Cherry Picking Demo</h1>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
-                <svg id="cherrySvg" viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg id="cherrySvg" class="demo-svg" viewBox="0 0 850 450">
                     <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Temperature Anomaly (°C)</text>
                     <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Year</text>
                     <g id="cherryAxes"></g>
@@ -156,38 +175,38 @@
                 </svg>
             </div>
             
-            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 5px;">
-                    <span style="font-weight: bold; color: green;">Full Trend (1970 - 2023)</span>
-                    <span style="font-weight: bold; color: #cc0000;">"The Hiatus" (1998 - 2011)</span>
+            <div class="demo-controls">
+                <div class="control-row">
+                    <span class="text-bold text-success">Full Trend (1970 - 2023)</span>
+                    <span class="text-bold text-danger">"The Hiatus" (1998 - 2011)</span>
                 </div>
-                <input type="range" id="cherrySlider" min="0" max="100" value="0" style="width: 100%; cursor: pointer;">
+                <input type="range" id="cherrySlider" class="range-slider" min="0" max="100" value="0">
             </div>
             
             <div class="footnote">
                 NASA Goddard Institute for Space Studies (GISS). (2024). <em>Global Land-Ocean Temperature Index</em>.<br>
                 Retrieved from <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">https://data.giss.nasa.gov/gistemp/</a><br>
-                <span style="color: #666;"><em>Interactive chart created by the authors.</em></span>
+                <span class="text-light"><em>Interactive chart created by the authors.</em></span>
             </div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Cherry Picking Example</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 55%;">
+        <div class="flex-row-between">
+            <div class="col-text">
                 <ul>
                     <li>Judd et al. (2024) Climate Reconstruction.<sup>1</sup></li>
                     <li>Uses a massive 485-million-year geological timeline.</li>
                     <li>Visually compresses and hides rate of modern warming.</li>
                 </ul>
             </div>
-            <div style="width: 40%; text-align: center;">
-                <img src="images/cherry_picking.png" alt="Cherry Picking Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-image">
+                <img src="images/cherry_picking.png" alt="Cherry Picking Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
+        <div class="footnote footnote-left">
             <sup>1</sup> Judd, E. J., Tierney, J. E., Lunt, D. J., Montañez, I. P., Huber, B. T., Wing, S. L., & Valdes, P. J. (2024).<br>
             A 485-million-year history of Earth’s surface temperature. <em>Science</em>, <em>385</em>(6715).
             <a href="https://doi.org/10.1126/science.adk3705" target="_blank">https://doi.org/10.1126/science.adk3705</a>
@@ -196,7 +215,7 @@
 
     <div class="slide">
         <h1>Underbinning</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Reducing number of bins (e.g., in histograms or heatmaps).</li>
             <li>Obscures true underlying distribution.</li>
             <li>Hides:
@@ -211,11 +230,11 @@
 
     <div class="slide">
         <h1>Underbinning Demo</h1>
-        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">Reducing the number of bins obscures the <br> true distribution, hiding important clusters.</p>
+        <p class="subtext">Reducing the number of bins obscures the <br> true distribution, hiding important clusters.</p>
 
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
-                <svg id="binSvg" viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg id="binSvg" class="demo-svg" viewBox="0 0 850 450">
                     <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Frequency</text>
                     <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Value Range</text>
                     <g id="binAxes"></g>
@@ -223,47 +242,45 @@
                 </svg>
             </div>
             
-            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
-                <label for="binSlider" style="font-size: 1.2em; font-weight: bold; color: #333;">Number of Bins: <span id="binCountDisplay">10</span></label>
-                <input type="range" id="binSlider" min="2" max="10" value="10" step="1" style="width: 100%; cursor: pointer; margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888; margin-top: 5px;">
+            <div class="demo-controls">
+                <label for="binSlider" class="text-bold" style="font-size: 1.3rem; color: var(--text-main);">Number of Bins: <span id="binCountDisplay">10</span></label>
+                <input type="range" id="binSlider" class="range-slider" min="2" max="10" value="10" step="1">
+                <div class="control-row text-light">
                     <span>Minimum (Misleading)</span>
                     <span>Maximum (Detailed)</span>
                 </div>
             </div>
 
-            <div class="footnote" style="text-align: center; width: 100%;">
-                Interactive chart created by the authors.
-            </div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Underbinning Example</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 50%;">
+        <div class="flex-row-between">
+            <div class="col-text">
                 <ul>
                     <li>Distribution of NBA player heights.<sup>1</sup></li>
                     <li>Too few bins (overly broad intervals).</li>
                     <li>Data grouped into coarse categories, true distribution is hidden.</li>
                 </ul>
             </div>
-            <div style="width: 45%; text-align: center;">
-                <img src="images/underbinning.png" alt="Underbinning Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-image">
+                <img src="images/underbinning.png" alt="Underbinning Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
-                <sup>1</sup> FlowingData. <em>Dishonest Charts</em>, from 
-                <a href="https://flowingdata.com/projects/dishonest-charts/" target="_blank">
-                    https://flowingdata.com/projects/dishonest-charts/
-                </a>
+        <div class="footnote footnote-left">
+            <sup>1</sup> FlowingData. <em>Dishonest Charts</em>, from 
+            <a href="https://flowingdata.com/projects/dishonest-charts/" target="_blank">
+                https://flowingdata.com/projects/dishonest-charts/
+            </a>
         </div>
     </div>
 
     <div class="slide">
         <h1>Axis Truncation</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Truncating the baseline</li>
             <li>Chart where y-axis does not start at zero.</li>
             <li>Differences appear larger.</li>
@@ -271,15 +288,11 @@
     </div>
 
     <div class="slide">
-        <h1 style="margin-bottom: 2rem;">Axis Truncation Demo</h1>
+        <h1>Axis Truncation Demo</h1>
+        <p class="subtext">Move the slider to truncate the y-axis. The data stays exactly the same.</p>
 
-        <p style="text-align: center; font-size: 1.2em; margin-bottom: 1.5rem;">
-            Move the slider to truncate the y-axis. The data stays exactly the same.
-        </p>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-
-            <svg id="axisSVG" width="500" height="300">
+        <div class="flex-col-center">
+            <svg id="axisSVG" width="500" height="300" style="margin-bottom: 2rem;">
                 <line x1="80" y1="250" x2="450" y2="250" stroke="black"/>
                 <line x1="80" y1="50" x2="80" y2="250" stroke="black"/>
 
@@ -303,48 +316,37 @@
                 <text x="265" y="295" text-anchor="middle" font-size="12">Same values: 100 vs. 110</text>
             </svg>
 
-            <div style="margin-top: 1.2rem; text-align: center; width: 100%;">
-                <label for="svgSlider" style="font-size: 1.1em;">
+            <div class="demo-controls" style="max-width: 20rem;">
+                <label for="svgSlider" style="font-size: 1.2rem;">
                     Y-axis starts at: <span id="sliderValue">0</span>
                 </label>
-                <br>
-                <input 
-                    type="range" 
-                    id="svgSlider" 
-                    min="0" 
-                    max="95" 
-                    value="0" 
-                    step="5"
-                    style="width: 100%; max-width: 300px; margin-top: 0.5rem;"
-                >
+                <input type="range" id="svgSlider" class="range-slider" min="0" max="95" value="0" step="5">
             </div>
 
-            <p id="svgMessage" style="text-align: center; margin-top: 1rem; font-size: 1.1em;">
+            <p id="svgMessage" style="font-size: 1.2rem; margin-top: 1.5rem;" class="text-center">
                 Full axis: the difference looks proportional.
             </p>
 
-            <div class="footnote" style="text-align: center; width: 100%;">
-                Interactive SVG created by the authors.
-            </div>
+            <div class="footnote">Interactive SVG created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Axis Truncation Example</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 55%;">
+        <div class="flex-row-between">
+            <div class="col-text">
                 <ul>
                     <li>Fox News Tax Cuts Broadcast (2012).<sup>1</sup></li>
                     <li>Truncated y-axis (starts at 34% instead of 0%).</li>
                     <li>Exaggerates minor 4.6% tax increase, making second bar appear much larger.</li>
                 </ul>
             </div>
-            <div style="width: 40%; text-align: center;">
-                <img src="images/axis_truncation.png" alt="Axis Truncation Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-image">
+                <img src="images/axis_truncation.png" alt="Axis Truncation Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
+        <div class="footnote footnote-left">
             <sup>1</sup> Fox News Network. (2012, August 1). <em>If Bush tax cuts expire</em> [Television broadcast]. Media Matters for America.
             <a href="https://peoplesgdarchive.org/item/10481/if-bush-tax-cuts-expire-fox-news-infographic" target="_blank">https://peoplesgdarchive.org/item/10481/if-bush-tax-cuts-expire-fox-news-infographic</a>
         </div>
@@ -352,7 +354,7 @@
 
     <div class="slide">
         <h1>Artificial Flattening or Steepening</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Flattening chart's visual appearance:
                 <ul>
                     <li>Extreme aspect ratios.</li>
@@ -364,140 +366,99 @@
 
     <div class="slide">
         <h1>Artificial Flattening / Steepening Demo</h1>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            
-            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
-                <svg viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
-                    
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg class="demo-svg" viewBox="0 0 850 450">
                     <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Metric Value</text>
                     <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Month of the Year</text>
-
                     <line x1="70" y1="20" x2="70" y2="380" stroke="#333" stroke-width="2" />
                     <line x1="70" y1="380" x2="830" y2="380" stroke="#333" stroke-width="2" />
-
                     <g id="svgYAxis"></g>
-
                     <g id="svgXAxis"></g>
-                    
                     <polyline id="svgDataLine" fill="none" stroke="#0055cc" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" points=""></polyline>
                 </svg>
             </div>
             
-            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: #555; margin-bottom: 5px;">
+            <div class="demo-controls">
+                <div class="control-row">
                     <span>Steepened</span>
                     <span>Flattened</span>
                 </div>
-                <input type="range" id="svgScaleSlider" min="0" max="100" value="50" style="width: 100%; cursor: pointer;">
+                <input type="range" id="svgScaleSlider" class="range-slider" min="0" max="100" value="50">
             </div>
             
-            <div class="footnote" style="text-align: center; width: 100%;">
-                Interactive chart created by the authors.
-            </div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Time Gap</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Using uneven or irregular time intervals on continuous axis but spacing them evenly.</li>
         </ul>
     </div>
 
     <div class="slide">
         <h1>Time Gap Demo</h1>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 800px; height: 35vh; position: relative;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper" style="height: 35vh;">
                 <canvas id="timeGapChart"></canvas>
             </div>
             
-            <div style="margin-top: 30px; text-align: center; width: 70%; max-width: 800px;">
-                <input type="range" id="timeGapSlider" min="0" max="100" value="0" style="width: 100%; cursor: pointer;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888; margin-top: 5px;">
+            <div class="demo-controls">
+                <input type="range" id="timeGapSlider" class="range-slider" min="0" max="100" value="0">
+                <div class="control-row text-light">
                     <span>All Years Shown</span>
                     <span>Stagnant Years Deleted</span>
                 </div>
             </div>
             
-            <div class="footnote" style="text-align: center; width: 100%;">
-                Interactive chart created by the authors.
-            </div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Oversmoothing</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Applying aggressive smoothing algorithms or over-fitted curves to raw data points.</li>
             <li>Hides critical short-term fluctuations, volatility, or local extremes.</li>
         </ul>
     </div>
 
     <div class="slide">
-        <h1 style="margin-bottom: 2rem;">Oversmoothing Demo</h1>
+        <h1>Oversmoothing Demo</h1>
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg id="oversmoothingSvg" viewBox="0 0 850 420" class="demo-svg">
+                    <rect x="0" y="0" width="850" height="420" fill="white"/>
+                    <line x1="70" y1="340" x2="800" y2="340" stroke="black" stroke-width="2"/>
+                    <line x1="70" y1="40" x2="70" y2="340" stroke="black" stroke-width="2"/>
+                    <text x="425" y="390" text-anchor="middle" font-size="16">Time</text>
+                    <text x="20" y="190" text-anchor="middle" font-size="16" transform="rotate(-90 20 190)">Value</text>
 
+                    <polyline id="rawLine" fill="none" stroke="rgba(120,120,120,0.6)" stroke-width="2" points=""/>
+                    <polyline id="smoothLine" fill="none" stroke="crimson" stroke-width="4" points=""/>
+                    <text id="oversmoothingTitle" x="425" y="25" text-anchor="middle" font-size="18" font-weight="bold">Raw data with minimal smoothing</text>
+                </svg>
+            </div>
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
-
-            <svg id="oversmoothingSvg" width="850" height="420" viewBox="0 0 850 420">
-                <rect x="0" y="0" width="850" height="420" fill="white"/>
-
-                <line x1="70" y1="340" x2="800" y2="340" stroke="black" stroke-width="2"/>
-                <line x1="70" y1="40" x2="70" y2="340" stroke="black" stroke-width="2"/>
-
-                <text x="425" y="390" text-anchor="middle" font-size="16">Time</text>
-                <text x="20" y="190" text-anchor="middle" font-size="16" transform="rotate(-90 20 190)">Value</text>
-
-                <polyline id="rawLine"
-                    fill="none"
-                    stroke="rgba(120,120,120,0.6)"
-                    stroke-width="2"
-                    points=""
-                />
-
-                <polyline id="smoothLine"
-                    fill="none"
-                    stroke="crimson"
-                    stroke-width="4"
-                    points=""
-                />
-
-                <text id="oversmoothingTitle" x="425" y="25" text-anchor="middle" font-size="18" font-weight="bold">
-                    Raw data with minimal smoothing
-                </text>
-            </svg>
-
-            <div style="width: 100%; max-width: 400px; text-align: center; margin-top: 1rem;">
-                <label for="smoothingSvgSlider" style="font-size: 1.1em;">
+            <div class="demo-controls" style="max-width: 25rem;">
+                <label for="smoothingSvgSlider" style="font-size: 1.2rem;">
                     Smoothing window: <span id="smoothingSvgValue">1</span>
                 </label>
-                <br>
-                <input 
-                    id="smoothingSvgSlider"
-                    type="range"
-                    min="1"
-                    max="15"
-                    value="1"
-                    step="2"
-                    style="width: 90%; margin-top: 0.8rem;"
-                >
+                <input id="smoothingSvgSlider" class="range-slider" type="range" min="1" max="15" value="1" step="2">
             </div>
 
-            <p id="oversmoothingSvgMessage" style="font-size: 1.1em; text-align: center;">
+            <p id="oversmoothingSvgMessage" style="font-size: 1.2rem; margin-top: 1.5rem;" class="text-center">
                 Low smoothing: short-term fluctuations are still visible.
             </p>
-
-            <div class="footnote" style="text-align: center;">
-                Interactive SVG created by the authors.
-            </div>
+            <div class="footnote">Interactive SVG created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Manipulating the Visual Encoding</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Manipulates choice of visual encoding.</li>
             <li>Often by misleading colour, size and shape (encoding).</li>
         </ul>
@@ -505,10 +466,9 @@
 
     <div class="slide">
         <h1>Visual Encoding Demo 1: Size (Area)</h1>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 600px; margin-bottom: 20px;">
-                <svg viewBox="0 0 600 300" style="width: 100%; height: auto; overflow: visible;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg class="demo-svg" viewBox="0 0 600 300">
                     <circle cx="200" cy="150" r="80" fill="rgba(0, 85, 204, 0.6)" stroke="#0055cc" stroke-width="3" />
                     <text x="200" y="260" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 1 (100%)</text>
                     
@@ -517,49 +477,46 @@
                 </svg>
             </div>
             
-            <div style="margin-top: 20px; text-align: center; width: 100%;">
-                <div style="display: flex; justify-content: center; align-items: center; font-size: 1.1em; color: #555;">
-                    <span id="sizeLabelHonest" style="font-weight: bold; color: green; display: inline-block; width: 160px; text-align: right;">2D Area</span>
-                    
+            <div class="demo-controls" style="width: 100%;">
+                <div class="switch-container">
+                    <span id="sizeLabelHonest" class="switch-label-left text-bold text-success">2D Area</span>
                     <label class="switch">
                         <input type="checkbox" id="svgSizeToggle">
                         <span class="slider-toggle"></span>
                     </label>
-                    
-                    <span id="sizeLabelDishonest" style="display: inline-block; width: 160px; text-align: left;">1D Radius</span>
+                    <span id="sizeLabelDishonest" class="switch-label-right">1D Radius</span>
                 </div>
             </div>
-            <div class="footnote" style="text-align: center; width: 100%;">Interactive chart created by the authors.</div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Manipulating the Visual Encoding Example 1</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 55%;">
+        <div class="flex-row-between">
+            <div class="col-text">
                 <ul>
                     <li>"Shrinking Family Doctor" (Time Magazine, 1990).<sup>1</sup></li>
                     <li>Maps a 1D percentage drop to a 2D icon's height.</li>
                     <li>Viewers perceive area, making the 1990 doctor look drastically smaller than the data supports.</li>
                 </ul>
             </div>
-            <div style="width: 40%; text-align: center;">
-                <img src="images/manipulating_the_visual_encoding_1.png" alt="Symbolism Manipulation Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-image">
+                <img src="images/manipulating_the_visual_encoding_1.png" alt="Symbolism Manipulation Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
+        <div class="footnote footnote-left">
             <sup>1</sup> Time Magazine. (1990). <em>The Shrinking Family Doctor</em> [Data visualization]. InfoVis Wiki: The Lie Factor.
             Retrieved from <a href="https://infovis-wiki.net/wiki/Lie_Factor" target="_blank">https://infovis-wiki.net/wiki/Lie_Factor</a>
         </div>
     </div>
 
-<div class="slide">
+    <div class="slide">
         <h1>Visual Encoding Demo 2: Color Mapping</h1>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
-                <svg viewBox="0 0 850 400" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg class="demo-svg" viewBox="0 0 850 400">
                     <defs>
                         <linearGradient id="gradHonest" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stop-color="#c6dbef" />
@@ -585,36 +542,36 @@
                 </svg>
             </div>
             
-            <div style="margin-top: 10px; text-align: center; width: 100%;">
-                <div style="display: flex; justify-content: center; align-items: center; font-size: 1.1em; color: #555;">
-                    <span id="colorLabelHonest" style="font-weight: bold; color: green; display: inline-block; width: 200px; text-align: right;">Sequential Palette</span>
+            <div class="demo-controls" style="width: 100%;">
+                <div class="switch-container">
+                    <span id="colorLabelHonest" class="switch-label-left text-bold text-success">Sequential Palette</span>
                     <label class="switch">
                         <input type="checkbox" id="svgColorToggle">
                         <span class="slider-toggle"></span>
                     </label>
-                    <span id="colorLabelDishonest" style="display: inline-block; width: 200px; text-align: left;">Color Palette</span>
+                    <span id="colorLabelDishonest" class="switch-label-right">Color Palette</span>
                 </div>
             </div>
-            <div class="footnote" style="text-align: center; width: 100%;">Interactive chart created by the authors.</div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Manipulating the Visual Encoding Example 2</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 50%;">
+        <div class="flex-row-between">
+            <div class="col-half">
                 <ul>
                     <li>The "Jet" / Rainbow Color Map.<sup>1</sup></li>
                     <li>Using non-uniform color jumps.</li>
                     <li>Creates visual boundaries.</li>
                 </ul>
             </div>
-            <div style="width: 46%; text-align: center;">
-                <img src="images/manipulating_the_visual_encoding_2.png" alt="Color Manipulation Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-half text-center">
+                <img src="images/manipulating_the_visual_encoding_2.png" alt="Color Manipulation Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
+        <div class="footnote footnote-left">
             <sup>1</sup> Smith, N., & van der Walt, S. (2015). <em>A better default colormap for Matplotlib</em>. Berkeley Institute for Data Science.
             Retrieved from <a href="https://bids.github.io/colormap/" target="_blank">https://bids.github.io/colormap/</a>
         </div>
@@ -622,7 +579,7 @@
 
     <div class="slide">
         <h1>Perspective Distortion</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Distorts the mathematical proportions of the data:
                 <ul>
                     <li>Tilting a pie chart to make foreground slices look larger.</li>
@@ -631,64 +588,41 @@
         </ul>
     </div>
 
-
-
     <div class="slide">
-        <h1 style="margin-bottom: 2rem;">Perspective Distortion Demo</h1>
+        <h1>Perspective Distortion Demo</h1>
+        <div class="flex-col-center">
+            <svg id="perspectivePieSvg" class="demo-svg" style="max-width: 45rem; margin-bottom: 1rem;" viewBox="0 0 720 420"></svg>
 
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <svg 
-                id="perspectivePieSvg" 
-                width="45rem" 
-                height="26rem" 
-                viewBox="0 0 720 420"
-                style="margin-bottom: 1rem;"
-            >
-            </svg>
-
-            <div style="width: 100%; max-width: 25rem; margin: 0 auto 1.2rem auto; text-align: center;">
-                <label for="tiltSlider" style="font-size: 1.1em;">
+            <div class="demo-controls" style="max-width: 25rem;">
+                <label for="tiltSlider" style="font-size: 1.2rem;">
                     Perspective tilt: <span id="tiltSliderValue">0</span>%
                 </label>
-                <br>
-                <input
-                    id="tiltSlider"
-                    type="range"
-                    min="0"
-                    max="70"
-                    value="0"
-                    step="5"
-                    style="width: 90%; margin-top: 0.8rem;"
-                >
+                <input id="tiltSlider" class="range-slider" type="range" min="0" max="70" value="0" step="5">
             </div>
 
-            <p id="perspectiveMessage" style="font-size: 1.1em; text-align: center; margin-bottom: 1rem;">
+            <p id="perspectiveMessage" style="font-size: 1.2rem; margin-top: 1.5rem;" class="text-center">
                 No tilt: slices are easier to compare by their actual angle.
             </p>
-
-            <div class="footnote" style="text-align: center;">
-                Interactive SVG chart created by the authors.
-            </div>
+            <div class="footnote">Interactive SVG chart created by the authors.</div>
         </div>
     </div>
 
     <div class="slide">
         <h1>Perspective Distortion Example</h1>
-        <div style="display: flex; justify-content: space-between; font-size: 1.3em; line-height: 1.6;">
-            <div style="width: 60%;">
+        <div class="flex-row-between">
+            <div class="col-text">
                 <ul>
                     <li><strong>Context:</strong> Apple Macworld Keynote (2008).<sup>1</sup></li>
                     <li><strong>Misuse:</strong> 3D tilt pushes the 19.5% slice into the middle.</li>
                     <li><strong>Effect:</strong> Perspective distortion makes 19.5% appear physically larger than 21.2%.</li>
                 </ul>
             </div>
-            <div style="width: 35%; text-align: center;">
-                <img src="images/perspective_distortion.png" alt="3D Distortion Example" style="max-height: 45vh; max-width: 100%; object-fit: contain;">
-                <p style="font-size: 0.6em; color: #666; margin-top: 5px;"><em>Chart recreated from original in Python by the authors.</em></p>
+            <div class="col-image">
+                <img src="images/perspective_distortion.png" alt="3D Distortion Example" class="example-img">
+                <p class="caption">Chart recreated from original in Python by the authors.</p>
             </div>
         </div>
-        <div class="footnote">
+        <div class="footnote footnote-left">
             <sup>1</sup> Apple (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
             Retrieved from <a href="https://paragraft.wordpress.com/tag/infovis/" target="_blank">https://paragraft.wordpress.com/tag/infovis/</a>
         </div>
@@ -696,7 +630,7 @@
 
     <div class="slide">
         <h1>Concealing Uncertainty</h1>
-        <ul style="font-size: 1.4em; line-height: 1.6;">
+        <ul class="list-large">
             <li>Not including:
                 <ul>
                     <li>Error bars.</li>
@@ -710,10 +644,9 @@
 
     <div class="slide">
         <h1>Concealing Uncertainty Demo</h1>
-
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; flex-grow: 1; justify-content: center;">
-            <div style="width: 100%; max-width: 800px; margin-bottom: 20px;">
-                <svg id="uncertSvg" viewBox="0 0 850 450" style="width: 100%; height: auto; overflow: visible; font-family: sans-serif; background-color: #ffffff; border-radius: 8px; padding: 10px;">
+        <div class="flex-col-center">
+            <div class="demo-wrapper">
+                <svg id="uncertSvg" class="demo-svg demo-svg-box" viewBox="0 0 850 450">
                     <text x="-200" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Projected Revenue (Millions)</text>
                     <text x="450" y="440" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Month</text>
                     
@@ -724,54 +657,52 @@
                 </svg>
             </div>
             
-            <div style="margin-top: 10px; text-align: center; width: 70%; max-width: 800px;">
-                <label for="uncertSlider" style="font-size: 1.2em; font-weight: bold; color: #333;">
-                    Confidence Interval Shown: <span id="uncertDisplay" style="color: #cc0000;">0%</span>
+            <div class="demo-controls">
+                <label for="uncertSlider" class="text-bold" style="font-size: 1.3rem; color: var(--text-main);">
+                    Confidence Interval Shown: <span id="uncertDisplay" class="text-danger">0%</span>
                 </label>
-                <input type="range" id="uncertSlider" min="0" max="95" value="0" step="1" style="width: 100%; cursor: pointer; margin-top: 15px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888; margin-top: 5px;">
+                <input type="range" id="uncertSlider" class="range-slider" min="0" max="95" value="0" step="1">
+                <div class="control-row text-light">
                     <span>0% (Concealed / Misleading)</span>
                     <span>95% (Honest Forecast)</span>
                 </div>
             </div>
 
-            <div class="footnote" style="text-align: center; width: 100%;">
-                Interactive chart created by the authors.
-            </div>
+            <div class="footnote">Interactive chart created by the authors.</div>
         </div>
     </div>
 
-    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-        <h1 style="font-size: 4em; text-align: center;">Related Work</h1>
+    <div class="slide cover">
+        <h1>Related Work</h1>
     </div>
 
     <div class="slide">
         <h1>Related Work</h1>
-        <ul style="font-size: 1.3em; line-height: 1.6;">
-            <li style="margin-bottom: 15px;"><i>Awesome Misleading Visualizations</i>: Curated GitHub List.<br>
+        <ul class="list-large">
+            <li style="margin-bottom: 1.5rem;"><i>Awesome Misleading Visualizations</i>: Curated GitHub List.<br>
                 <a href="https://github.com/UKPLab/awesome-misleading-visualizations" target="_blank" style="font-size: 0.8em; word-break: break-all;">https://github.com/UKPLab/awesome-misleading-visualizations</a>
             </li>
-            <li style="margin-bottom: 15px;"><i>FlawViz</i>: Collection of Misleading Data Visualization.<br>
+            <li style="margin-bottom: 1.5rem;"><i>FlawViz</i>: Collection of Misleading Data Visualization.<br>
                 <a href="https://flawviz.github.io/" target="_blank" style="font-size: 0.8em; word-break: break-all;">https://flawviz.github.io/</a>
             </li>
-            <li style="margin-bottom: 15px;"><i>FlowingData</i>: Defensive Chart Techniques by Nathan Yau.<br>
+            <li style="margin-bottom: 1.5rem;"><i>FlowingData</i>: Defensive Chart Techniques by Nathan Yau.<br>
                 <a href="https://flowingdata.com/projects/dishonest-charts/" target="_blank" style="font-size: 0.8em; word-break: break-all;">https://flowingdata.com/projects/dishonest-charts/</a>
             </li>
-            <li style="margin-bottom: 15px;"><i>How Charts Lie</i>: Book by Alberto Cairo.<br>
+            <li style="margin-bottom: 1.5rem;"><i>How Charts Lie</i>: Book by Alberto Cairo.<br>
                 <a href="https://wwnorton.com/books/9781324001560" target="_blank" style="font-size: 0.8em; word-break: break-all;">https://wwnorton.com/books/9781324001560</a>
             </li>
         </ul>
     </div>
 
-    <div class="slide" style="display: flex; justify-content: center; align-items: center; height: 80vh;">
-        <h1 style="font-size: 4em; text-align: center;">Questions?</h1>
+    <div class="slide cover">
+        <h1>Questions?</h1>
     </div>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             
-           // ==========================================
-            // 1. SETUP CHERRY PICKING (NASA GISS DATA)
+            // ==========================================
+            // 1. CHERRY PICKING
             // ==========================================
             const cherrySlider = document.getElementById('cherrySlider');
             const cherryLine = document.getElementById('cherryLine');
@@ -788,8 +719,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
 
                 const cherryPlotX = 70, cherryPlotY = 20, cherryPlotW = 760, cherryPlotH = 360;
-                
-                // Adjusted zoom bounds to end on the 2011 drop
                 const fullX = [1970, 2023], fullY = [-0.2, 1.3];
                 const zoomX = [1998, 2011], zoomY = [0.35, 0.75]; 
 
@@ -802,7 +731,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const curYMin = fullY[0] + ease * (zoomY[0] - fullY[0]);
                     const curYMax = fullY[1] + ease * (zoomY[1] - fullY[1]);
 
-                    // Map points
                     const points = climateData.map(d => {
                         const px = cherryPlotX + ((d.y - curXMin) / (curXMax - curXMin)) * cherryPlotW;
                         const py = (cherryPlotY + cherryPlotH) - ((d.t - curYMin) / (curYMax - curYMin)) * cherryPlotH;
@@ -810,23 +738,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }).join(" ");
                     
                     cherryLine.setAttribute("points", points);
-                    // Apply a clipping mask directly to the line so it doesn't spill out
                     cherryLine.setAttribute("clip-path", "url(#cherryClipMask)");
 
-                    // Build the Axes and the ClipPath
-                    let axesHTML = `
-                        <defs>
-                            <clipPath id="cherryClipMask">
-                                <rect x="${cherryPlotX}" y="${cherryPlotY}" width="${cherryPlotW}" height="${cherryPlotH}" />
-                            </clipPath>
-                        </defs>
-                    `;
-
-                    // Main border lines
+                    let axesHTML = `<defs><clipPath id="cherryClipMask"><rect x="${cherryPlotX}" y="${cherryPlotY}" width="${cherryPlotW}" height="${cherryPlotH}" /></clipPath></defs>`;
                     axesHTML += `<line x1="${cherryPlotX}" y1="${cherryPlotY}" x2="${cherryPlotX}" y2="${cherryPlotY+cherryPlotH}" stroke="#555" stroke-width="2"/>`;
                     axesHTML += `<line x1="${cherryPlotX}" y1="${cherryPlotY+cherryPlotH}" x2="${cherryPlotX+cherryPlotW}" y2="${cherryPlotY+cherryPlotH}" stroke="#555" stroke-width="2"/>`;
 
-                    // Dynamic Y-Axis
                     const ySteps = 5;
                     for (let i = 0; i <= ySteps; i++) {
                         const prop = i / ySteps;
@@ -836,11 +753,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         axesHTML += `<text x="${cherryPlotX - 10}" y="${py + 5}" text-anchor="end" font-size="14" fill="#555">${valY.toFixed(2)}</text>`;
                     }
 
-                    // Dynamic X-Axis (Smart Intervals)
                     let span = curXMax - curXMin;
-                    // Decide tick spacing based on zoom level: every 10, 5, or 2 years
                     let tickInterval = span > 30 ? 10 : (span > 15 ? 5 : 2);
-                    
                     let startYear = Math.round(curXMin);
                     let endYear = Math.round(curXMax);
 
@@ -851,19 +765,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     for (let y = startYear; y <= endYear; y++) {
-                        // Always draw the exact start and end years
                         if (y === startYear || y === endYear) {
                             addTick(y);
-                        } 
-                        // Draw interior years on nice, even intervals
-                        else if (y % tickInterval === 0) {
-                            // Prevent text from overlapping if a tick is too close to the edges
+                        } else if (y % tickInterval === 0) {
                             if ((y - startYear) > (tickInterval * 0.6) && (endYear - y) > (tickInterval * 0.6)) {
                                 addTick(y);
                             }
                         }
                     }
-                    
                     cherryAxes.innerHTML = axesHTML;
                 }
 
@@ -872,7 +781,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ==========================================
-            // 2. SETUP UNDERBINNING (BIMODAL DATASET)
+            // 2. UNDERBINNING
             // ==========================================
             const binSlider = document.getElementById('binSlider');
             const binBarsGroup = document.getElementById('binBars');
@@ -941,7 +850,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ==========================================
-            // SVG AXIS TRUNCATION DEMO
+            // 3. AXIS TRUNCATION
             // ==========================================
 
             const svgSlider = document.getElementById('svgSlider');
@@ -1002,28 +911,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // ==========================================
-            // 4. SETUP FLATTENING / STEEPENING LOGIC
+            // 4. FLATTENING / STEEPENING
             // ==========================================
             (function initSVGFlattening() {
                 const data = [50, 52, 51, 54, 53, 56, 55, 58, 57, 60, 59, 62];
                 const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 
-                // Plot Area Dimensions
-                const plotX = 70;
-                const plotY = 20;
-                const plotW = 760; // 830 - 70
-                const plotH = 360; // 380 - 20
+                const plotX = 70, plotY = 20, plotW = 760, plotH = 360;
                 const dx = plotW / (data.length - 1);
 
                 const line = document.getElementById('svgDataLine');
                 const slider = document.getElementById('svgScaleSlider');
-                const statusText = document.getElementById('svgStatusText');
                 const yAxisGroup = document.getElementById('svgYAxis');
                 const xAxisGroup = document.getElementById('svgXAxis');
 
                 if (!line || !slider) return;
 
-                // Draw Static X-Axis Labels
                 labels.forEach((month, index) => {
                     const x = plotX + (index * dx);
                     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -1035,7 +938,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     text.textContent = month;
                     xAxisGroup.appendChild(text);
                     
-                    // Small tick mark
                     const tick = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     tick.setAttribute("x1", x);
                     tick.setAttribute("y1", plotY + plotH);
@@ -1047,37 +949,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 function updateSVG() {
                     const val = parseInt(slider.value);
-                    let yMin, yMax;
-                    let lineColor = "#0055cc";
+                    let yMin, yMax, lineColor = "#0055cc";
 
-                    // Determine Math Bounds
                     if (val <= 50) {
                         let intensity = Math.pow((50 - val) / 50, 2);
                         yMin = 0 + (intensity * 49);  
                         yMax = 100 - (intensity * 37); 
-                        
-                        if (val < 20) {
-                            lineColor = "#cc0000"; 
-                        } 
+                        if (val < 20) lineColor = "#cc0000"; 
                     } else {
                         let intensity = Math.pow((val - 50) / 50, 3);
                         yMin = 0;
                         yMax = 100 + (intensity * 1900); 
-                        
-                        if (val > 80) {
-                            lineColor = "#999999"; 
-                        }
+                        if (val > 80) lineColor = "#999999"; 
                     }
 
-                    // Generate Dynamic Y-Axis Grid & Labels
-                    yAxisGroup.innerHTML = ''; // Clear old labels
+                    yAxisGroup.innerHTML = '';
                     const numTicks = 5;
                     for (let i = 0; i < numTicks; i++) {
                         const proportion = i / (numTicks - 1);
                         const currentYValue = yMin + ((yMax - yMin) * proportion);
                         const yPos = (plotY + plotH) - (proportion * plotH);
 
-                        // Grid Line
                         const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
                         gridLine.setAttribute("x1", plotX);
                         gridLine.setAttribute("y1", yPos);
@@ -1086,19 +978,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         gridLine.setAttribute("stroke", "#eee");
                         yAxisGroup.appendChild(gridLine);
 
-                        // Text Label
                         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                         text.setAttribute("x", plotX - 10);
                         text.setAttribute("y", yPos + 5);
                         text.setAttribute("text-anchor", "end");
                         text.setAttribute("font-size", "14");
                         text.setAttribute("fill", "#666");
-                        // Format large numbers nicely (e.g., 1k instead of 1000 if it gets huge)
                         text.textContent = currentYValue >= 1000 ? Math.round(currentYValue/1000) + 'k' : Math.round(currentYValue);
                         yAxisGroup.appendChild(text);
                     }
 
-                    // Generate Data Line Points
                     const pointsString = data.map((val, index) => {
                         const x = plotX + (index * dx);
                         const normalizedY = (val - yMin) / (yMax - yMin);
@@ -1111,11 +1000,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 slider.addEventListener('input', updateSVG);
-                updateSVG(); // Initial Draw
+                updateSVG();
             })();
 
             // ==========================================
-            // OVERSMOOTHING SVG DEMO
+            // 5. OVERSMOOTHING
             // ==========================================
 
             const svgRawData = [
@@ -1127,7 +1016,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function svgMovingAverage(data, windowSize) {
                 if (windowSize <= 1) return data;
-
                 return data.map((value, index) => {
                     const halfWindow = Math.floor(windowSize / 2);
                     const start = Math.max(0, index - halfWindow);
@@ -1138,13 +1026,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function dataToSvgPoints(data) {
-                const xMin = 70;
-                const xMax = 800;
-                const yMin = 40;
-                const yMax = 340;
-
-                const dataMin = 20;
-                const dataMax = 80;
+                const xMin = 70, xMax = 800, yMin = 40, yMax = 340;
+                const dataMin = 20, dataMax = 80;
 
                 return data.map((value, index) => {
                     const x = xMin + (index / (data.length - 1)) * (xMax - xMin);
@@ -1185,23 +1068,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             }
-
             initOversmoothingSvg();
+
             // ==========================================
-            // 5. SETUP TIME GAP LOGIC (BAR CHART - EXTREME)
+            // 6. TIME GAP
             // ==========================================
-            
-            // 21 Years total: 2000 to 2020
-            const fullYears = [
-                2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 
-                2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
-            ];
-            
-            // 19 years of boring stagnation, followed by a massive 2-year spike
-            const fullValues = [
-                10, 11, 9, 12, 10, 13, 11, 12, 10, 14, 
-                11, 12, 10, 13, 11, 12, 10, 11, 12, 60, 85
-            ]; 
+            const fullYears = [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
+            const fullValues = [10, 11, 9, 12, 10, 13, 11, 12, 10, 14, 11, 12, 10, 13, 11, 12, 10, 11, 12, 60, 85]; 
 
             function drawTimeGapChart() {
                 const ctx5 = document.getElementById('timeGapChart').getContext('2d');
@@ -1220,35 +1093,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: { duration: 200 }, // Snappy transition when bars vanish
+                        animation: { duration: 200 },
                         scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100,
-                                title: { display: true, text: 'Revenue' }
-                            },
-                            x: {
-                                title: { display: true, text: 'Year' }
-                            }
+                            y: { beginAtZero: true, max: 100, title: { display: true, text: 'Revenue' } },
+                            x: { title: { display: true, text: 'Year' } }
                         }
                     }
                 });
             }
 
             const timeGapSlider = document.getElementById('timeGapSlider');
-            const timeGapStatus = document.getElementById('timeGapStatus');
-
             if (timeGapSlider) {
                 timeGapSlider.addEventListener('input', function(e) {
                     const val = parseInt(e.target.value); 
-                    
-                    // Dynamically remove up to 18 middle years (from 2001 to 2018)
                     const removeCount = Math.round((val / 100) * 18); 
                     
                     let currentYears = [...fullYears];
                     let currentValues = [...fullValues];
-
-                    // Splice out the boring middle years, keeping the year 2000 as an anchor
                     currentYears.splice(1, removeCount);
                     currentValues.splice(1, removeCount);
 
@@ -1256,7 +1117,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.myTimeGapChart.data.labels = currentYears;
                         window.myTimeGapChart.data.datasets[0].data = currentValues;
                         
-                        // Turn alarming red when highly distorted
                         if (val > 80) {
                             window.myTimeGapChart.data.datasets[0].backgroundColor = 'rgba(204, 0, 0, 0.6)';
                             window.myTimeGapChart.data.datasets[0].borderColor = '#cc0000';
@@ -1264,14 +1124,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             window.myTimeGapChart.data.datasets[0].backgroundColor = 'rgba(0, 85, 204, 0.6)';
                             window.myTimeGapChart.data.datasets[0].borderColor = '#0055cc';
                         }
-                        
                         window.myTimeGapChart.update();
                     }
                 });
             }
 
             // ==========================================
-            // 6. SETUP VISUAL ENCODING LOGIC (SIZE / AREA - TOGGLE)
+            // 7. VISUAL ENCODING (SIZE / AREA - TOGGLE)
             // ==========================================
             (function initSVGSizeArea() {
                 const baseRadius = 80;
@@ -1280,7 +1139,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const compareCircle = document.getElementById('svgCircleCompare');
                 const toggle = document.getElementById('svgSizeToggle');
-                const statusText = document.getElementById('svgSizeStatus');
                 const labelHonest = document.getElementById('sizeLabelHonest');
                 const labelDishonest = document.getElementById('sizeLabelDishonest');
 
@@ -1290,15 +1148,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (toggle.checked) {
                         compareCircle.setAttribute("r", dishonestRadius);
                         labelDishonest.style.fontWeight = "bold";
-                        labelDishonest.style.color = "#cc0000";
+                        labelDishonest.style.color = "var(--danger-color)";
                         labelHonest.style.fontWeight = "normal";
-                        labelHonest.style.color = "#555";
+                        labelHonest.style.color = "var(--text-muted)";
                     } else {
                         compareCircle.setAttribute("r", honestRadius);
                         labelHonest.style.fontWeight = "bold";
-                        labelHonest.style.color = "green";
+                        labelHonest.style.color = "var(--success-color)";
                         labelDishonest.style.fontWeight = "normal";
-                        labelDishonest.style.color = "#555";
+                        labelDishonest.style.color = "var(--text-muted)";
                     }
                 }
 
@@ -1306,12 +1164,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })();
 
             // ==========================================
-            // 7. SETUP VISUAL ENCODING LOGIC (COLOR MAPPING - PURE SVG AREA)
+            // 7. VISUAL ENCODING  (COLOR MAPPING)
             // ==========================================
             (function initSVGColor() {
                 const area = document.getElementById('svgColorArea');
                 const toggle = document.getElementById('svgColorToggle');
-                const statusText = document.getElementById('svgColorStatus');
                 const labelHonest = document.getElementById('colorLabelHonest');
                 const labelDishonest = document.getElementById('colorLabelDishonest');
 
@@ -1321,23 +1178,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (toggle.checked) {
                         area.setAttribute("fill", "url(#gradDishonest)");
                         labelDishonest.style.fontWeight = "bold";
-                        labelDishonest.style.color = "#cc0000";
+                        labelDishonest.style.color = "var(--danger-color)";
                         labelHonest.style.fontWeight = "normal";
-                        labelHonest.style.color = "#555";
+                        labelHonest.style.color = "var(--text-muted)";
                     } else {
                         area.setAttribute("fill", "url(#gradHonest)");
                         labelHonest.style.fontWeight = "bold";
-                        labelHonest.style.color = "green";
+                        labelHonest.style.color = "var(--success-color)";
                         labelDishonest.style.fontWeight = "normal";
-                        labelDishonest.style.color = "#555";
+                        labelDishonest.style.color = "var(--text-muted)";
                     }
                 });
             })();
 
             // ==========================================
-            // PERSPECTIVE DISTORTION SVG DEMO
+            // 8. PERSPECTIVE DISTORTION
             // ==========================================
-
             const perspectiveData = [
                 { label: 'A', value: 21.2, color: '#5DADE2' },
                 { label: 'B', value: 19.5, color: '#F1948A' },
@@ -1346,33 +1202,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function polarToCartesian(cx, cy, rx, ry, angleDegrees) {
                 const angleRadians = (angleDegrees - 90) * Math.PI / 180;
-
-                return {
-                    x: cx + rx * Math.cos(angleRadians),
-                    y: cy + ry * Math.sin(angleRadians)
-                };
+                return { x: cx + rx * Math.cos(angleRadians), y: cy + ry * Math.sin(angleRadians) };
             }
 
             function describeSlice(cx, cy, rx, ry, startAngle, endAngle) {
                 const start = polarToCartesian(cx, cy, rx, ry, endAngle);
                 const end = polarToCartesian(cx, cy, rx, ry, startAngle);
                 const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-
-                return [
-                    "M", cx, cy,
-                    "L", start.x, start.y,
-                    "A", rx, ry, 0, largeArcFlag, 0, end.x, end.y,
-                    "Z"
-                ].join(" ");
+                return ["M", cx, cy, "L", start.x, start.y, "A", rx, ry, 0, largeArcFlag, 0, end.x, end.y, "Z"].join(" ");
             }
 
             function createSvgElement(type, attributes) {
                 const element = document.createElementNS("http://www.w3.org/2000/svg", type);
-
-                Object.entries(attributes).forEach(([key, value]) => {
-                    element.setAttribute(key, value);
-                });
-
+                Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
                 return element;
             }
 
@@ -1380,101 +1222,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 const svg = document.getElementById('perspectivePieSvg');
                 svg.innerHTML = '';
 
-                const cx = 360;
-                const cy = 180;
-                const rx = 150;
-                const ry = 150 - tilt;
-                const depth = tilt * 0.45;
+                const cx = 360, cy = 180, rx = 150, ry = 150 - tilt, depth = tilt * 0.45;
 
                 if (tilt > 0) {
-                    const bottomEllipse = createSvgElement('ellipse', {
-                        cx: cx,
-                        cy: cy + depth,
-                        rx: rx,
-                        ry: ry,
-                        fill: '#777',
-                        opacity: '0.22'
-                    });
-
-                    svg.appendChild(bottomEllipse);
+                    svg.appendChild(createSvgElement('ellipse', { cx: cx, cy: cy + depth, rx: rx, ry: ry, fill: '#777', opacity: '0.22' }));
                 }
 
                 let currentAngle = 0;
-
                 perspectiveData.forEach(slice => {
                     const sliceAngle = slice.value / 100 * 360;
-                    const startAngle = currentAngle;
                     const endAngle = currentAngle + sliceAngle;
 
-                    const path = createSvgElement('path', {
-                        d: describeSlice(cx, cy, rx, ry, startAngle, endAngle),
-                        fill: slice.color,
-                        stroke: '#ffffff',
-                        'stroke-width': 2
-                    });
+                    svg.appendChild(createSvgElement('path', { d: describeSlice(cx, cy, rx, ry, currentAngle, endAngle), fill: slice.color, stroke: '#ffffff', 'stroke-width': 2 }));
 
-                    svg.appendChild(path);
-
-                    const midAngle = startAngle + sliceAngle / 2;
+                    const midAngle = currentAngle + sliceAngle / 2;
                     const labelPosition = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
-
-                    const label = createSvgElement('text', {
-                        x: labelPosition.x,
-                        y: labelPosition.y,
-                        'text-anchor': 'middle',
-                        'dominant-baseline': 'middle',
-                        'font-size': 18,
-                        'font-weight': 'bold',
-                        fill: '#222'
-                    });
-
+                    const label = createSvgElement('text', { x: labelPosition.x, y: labelPosition.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 18, 'font-weight': 'bold', fill: '#222' });
                     label.textContent = `${slice.label}: ${slice.value}%`;
                     svg.appendChild(label);
 
                     currentAngle = endAngle;
                 });
 
-                const caption = createSvgElement('text', {
-                    x: 360,
-                    y: 380,
-                    'text-anchor': 'middle',
-                    'font-size': 16,
-                    fill: '#555'
-                });
-
-                caption.textContent = tilt === 0
-                    ? 'Honest 2D pie chart'
-                    : 'Tilted pie chart: same values, distorted appearance';
-
+                const caption = createSvgElement('text', { x: 360, y: 380, 'text-anchor': 'middle', 'font-size': 16, fill: '#555' });
+                caption.textContent = tilt === 0 ? 'Honest 2D pie chart' : 'Tilted pie chart: same values, distorted appearance';
                 svg.appendChild(caption);
             }
 
             function initPerspectiveDistortionDemo() {
                 drawPerspectivePieSvg(0);
-
                 const slider = document.getElementById('tiltSlider');
                 const sliderValue = document.getElementById('tiltSliderValue');
                 const message = document.getElementById('perspectiveMessage');
 
                 slider.addEventListener('input', function () {
                     const tilt = Number(this.value);
-
                     sliderValue.innerText = tilt;
                     drawPerspectivePieSvg(tilt);
-
-                    if (tilt === 0) {
-                        message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
-                    } else if (tilt < 40) {
-                        message.innerText = 'Moderate tilt: the chart starts to look three-dimensional.';
-                    } else {
-                        message.innerText = 'Strong tilt: perspective makes some slices appear visually more important than their values suggest.';
-                    }
+                    if (tilt === 0) message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
+                    else if (tilt < 40) message.innerText = 'Moderate tilt: the chart starts to look three-dimensional.';
+                    else message.innerText = 'Strong tilt: perspective makes some slices appear visually more important than their values suggest.';
                 });
             }
-            // ==========================================
-            // 9. SETUP CONCEALING UNCERTAINTY 
-            // ==========================================
 
+            // ==========================================
+            // 9. CONCEALING UNCERTAINTY 
+            // ==========================================
             const uncertSlider = document.getElementById('uncertSlider');
             const uncertDisplay = document.getElementById('uncertDisplay');
             const uncertArea = document.getElementById('uncertArea');
@@ -1484,30 +1277,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (uncertSlider && uncertArea && uncertLine) {
                 const forecastData = [
-                    { month: 1, y: 50, err: 2 },
-                    { month: 2, y: 52, err: 3 },
-                    { month: 3, y: 55, err: 5 },
-                    { month: 4, y: 53, err: 8 },
-                    { month: 5, y: 58, err: 12 },
-                    { month: 6, y: 62, err: 16 },
-                    { month: 7, y: 60, err: 20 },
-                    { month: 8, y: 65, err: 25 },
-                    { month: 9, y: 68, err: 30 },
-                    { month: 10, y: 72, err: 36 }
+                    { month: 1, y: 50, err: 2 }, { month: 2, y: 52, err: 3 }, { month: 3, y: 55, err: 5 }, { month: 4, y: 53, err: 8 }, { month: 5, y: 58, err: 12 },
+                    { month: 6, y: 62, err: 16 }, { month: 7, y: 60, err: 20 }, { month: 8, y: 65, err: 25 }, { month: 9, y: 68, err: 30 }, { month: 10, y: 72, err: 36 }
                 ];
 
                 const uncertPlotX = 70, uncertPlotY = 20, uncertPlotW = 760, uncertPlotH = 360;
-                const minX = 1, maxX = 10;
-                const minY = 0, maxY = 120; 
+                const minX = 1, maxX = 10, minY = 0, maxY = 120; 
 
                 function updateUncertSVG() {
                     const confidenceVal = parseInt(uncertSlider.value);
                     const errorMultiplier = confidenceVal / 95; 
-
-                    // Determine if the current state is misleading (< 50% confidence shown)
                     const isDishonest = confidenceVal < 50;
-                    
-                    // Match colors from Underbinning/Flattening charts
                     const lineColor = isDishonest ? "#cc0000" : "#0055cc";
                     const areaColor = isDishonest ? "rgba(255, 99, 132, 0.25)" : "rgba(54, 162, 235, 0.25)";
 
@@ -1516,15 +1296,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         uncertDisplay.style.color = isDishonest ? '#cc0000' : 'green';
                     }
 
-                    let linePoints = [];
-                    let upperPoints = [];
-                    let lowerPoints = [];
-                    let pointsHTML = '';
+                    let linePoints = [], upperPoints = [], lowerPoints = [], pointsHTML = '';
 
                     forecastData.forEach(d => {
                         const px = uncertPlotX + ((d.month - minX) / (maxX - minX)) * uncertPlotW;
                         const py = (uncertPlotY + uncertPlotH) - ((d.y - minY) / (maxY - minY)) * uncertPlotH;
-                        
                         const currentErr = d.err * errorMultiplier;
                         const pyUpper = (uncertPlotY + uncertPlotH) - (((d.y + currentErr) - minY) / (maxY - minY)) * uncertPlotH;
                         const pyLower = (uncertPlotY + uncertPlotH) - (((d.y - currentErr) - minY) / (maxY - minY)) * uncertPlotH;
@@ -1532,19 +1308,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         linePoints.push(`${px},${py}`);
                         upperPoints.push(`${px},${pyUpper}`);
                         lowerPoints.unshift(`${px},${pyLower}`); 
-
-                        // Apply dynamic color to the points
                         pointsHTML += `<circle cx="${px}" cy="${py}" r="4" fill="${lineColor}"></circle>`;
                     });
 
-                    // Apply dynamic colors to the line and shaded area
                     uncertLine.setAttribute("points", linePoints.join(" "));
                     uncertLine.setAttribute("stroke", lineColor);
-                    
-                    const areaPath = `M ${upperPoints[0]} L ${upperPoints.join(" L ")} L ${lowerPoints.join(" L ")} Z`;
-                    uncertArea.setAttribute("d", areaPath);
+                    uncertArea.setAttribute("d", `M ${upperPoints[0]} L ${upperPoints.join(" L ")} L ${lowerPoints.join(" L ")} Z`);
                     uncertArea.setAttribute("fill", areaColor);
-                    
                     uncertPoints.innerHTML = pointsHTML;
 
                     let axesHTML = '';
@@ -1564,65 +1334,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         axesHTML += `<line x1="${px}" y1="${uncertPlotY+uncertPlotH}" x2="${px}" y2="${uncertPlotY+uncertPlotH+5}" stroke="#555"/>`;
                         axesHTML += `<text x="${px}" y="${uncertPlotY+uncertPlotH+25}" text-anchor="middle" font-size="14" fill="#555">M${i}</text>`;
                     }
-
                     uncertAxes.innerHTML = axesHTML;
                 }
-
                 uncertSlider.addEventListener('input', updateUncertSVG);
                 updateUncertSVG(); 
             }
 
-            
-
             // ==========================================
-            // 6. CANVAS OBSERVERS
+            // CANVAS OBSERVERS
             // ==========================================
-            
-            const canvas1 = document.getElementById('climateChart');
-            const observer1 = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    drawCherryChart();             
-                    observer1.disconnect();   
-                }
-            });
-            if (canvas1) observer1.observe(canvas1);
-
-            const canvas2 = document.getElementById('underbinningChart');
-            const observer2 = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    drawUnderbinningChart();             
-                    observer2.disconnect();   
-                }
-            });
-            if (canvas2) observer2.observe(canvas2);
-
-            const canvas3 = document.getElementById('axisTruncationChart');
-            const observer3 = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    drawAxisTruncationChart();             
-                    observer3.disconnect();   
-                }
-            });
-            if (canvas3) observer3.observe(canvas3);
-
-            const canvas4 = document.getElementById('flatteningChart');
-            const observer4 = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    drawFlatteningChart();             
-                    observer4.disconnect();   
-                }
-            });
-            if (canvas4) observer4.observe(canvas4);
-
-            /*const canvas5 = document.getElementById('oversmoothingChart');
-            const observer5 = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    drawOversmoothingChart();
-                    observer5.disconnect();
-                }
-            });
-            if (canvas5) observer5.observe(canvas5);*/
-
             const canvas6 = document.getElementById('timeGapChart');
             const observer6 = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
