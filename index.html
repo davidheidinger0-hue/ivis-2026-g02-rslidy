@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="rslidy.min.css" />
     <script type="module" src="rslidy.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
 
     <style>
         :root {
@@ -513,33 +515,29 @@
     <div class="slide">
         <h1>Visual Encoding Demo 2: Color Mapping</h1>
         <div class="flex-col-center">
-            <div class="demo-wrapper">
-                <svg class="demo-svg" viewBox="0 0 850 400">
+            <div class="demo-wrapper" style="max-width: 950px; position: relative;">
+                <div id="usaMapContainer" style="width: 100%; height: 550px; overflow: hidden; border-radius: 0.5rem; background: #e0f3ff;"></div>
+                <svg style="position: absolute; right: 20px; bottom: 20px; width: 120px; height: 350px; overflow: visible;">
                     <defs>
-                        <linearGradient id="gradHonest" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stop-color="#c6dbef" />
-                            <stop offset="50%" stop-color="#4292c6" />
-                            <stop offset="100%" stop-color="#08306b" />
+                        <linearGradient id="legHonest" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#fee0d2" />
+                            <stop offset="100%" stop-color="#de2d26" />
                         </linearGradient>
-                        <linearGradient id="gradDishonest" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <linearGradient id="legDishonest" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#0000cc" />
                             <stop offset="20%" stop-color="#00ccff" />
                             <stop offset="40%" stop-color="#00ffcc" />
                             <stop offset="60%" stop-color="#ffff00" />
-                            <stop offset="80%" stop-color="#ff3300" />
+                            <stop offset="80%" stop-color="#ff6600" />
                             <stop offset="100%" stop-color="#cc0000" />
                         </linearGradient>
                     </defs>
-                    
-                    <line x1="50" y1="20" x2="50" y2="350" stroke="#333" stroke-width="2" />
-                    <line x1="50" y1="350" x2="800" y2="350" stroke="#333" stroke-width="2" />
-                    <text x="-185" y="20" transform="rotate(-90)" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Data Value</text>
-                    <text x="425" y="390" text-anchor="middle" font-weight="bold" font-size="16" fill="#555">Distance / Time</text>
-
-                    <path id="svgColorArea" d="M 50,350 L 50,250 C 200,250 250,50 400,100 C 550,150 600,50 800,200 L 800,350 Z" fill="url(#gradHonest)" stroke="#333" stroke-width="2" style="transition: fill 0.4s ease;" />
+                    <rect id="legendBar" x="0" y="0" width="20" height="300" fill="url(#legHonest)" stroke="#333" stroke-width="1"/>
+                    <text x="30" y="12" font-size="14" fill="#333" font-weight="bold">10°C</text>
+                    <text x="30" y="150" font-size="14" fill="#333">22°C</text>
+                    <text x="30" y="300" font-size="14" fill="#333" font-weight="bold">35°C</text>
                 </svg>
             </div>
-            
             <div class="demo-controls" style="width: 100%;">
                 <div class="switch-container">
                     <span id="colorLabelHonest" class="switch-label-left text-bold text-success">Sequential Palette</span>
@@ -547,7 +545,7 @@
                         <input type="checkbox" id="svgColorToggle">
                         <span class="slider-toggle"></span>
                     </label>
-                    <span id="colorLabelDishonest" class="switch-label-right">Color Palette</span>
+                    <span id="colorLabelDishonest" class="switch-label-right">Rainbow Palette</span>
                 </div>
             </div>
             <div class="footnote">Interactive chart created by the authors.</div>
@@ -1169,27 +1167,94 @@
             // 7. VISUAL ENCODING  (COLOR MAPPING)
             // ==========================================
             (function initSVGColor() {
-                const area = document.getElementById('svgColorArea');
                 const toggle = document.getElementById('svgColorToggle');
                 const labelHonest = document.getElementById('colorLabelHonest');
                 const labelDishonest = document.getElementById('colorLabelDishonest');
+                const legendBar = document.getElementById('legendBar');
 
-                if (!area || !toggle) return;
+                if (!document.getElementById('usaMapContainer') || !toggle) return;
 
-                toggle.addEventListener('change', function() {
-                    if (toggle.checked) {
-                        area.setAttribute("fill", "url(#gradDishonest)");
-                        labelDishonest.style.fontWeight = "bold";
-                        labelDishonest.style.color = "var(--danger-color)";
-                        labelHonest.style.fontWeight = "normal";
-                        labelHonest.style.color = "var(--text-muted)";
-                    } else {
-                        area.setAttribute("fill", "url(#gradHonest)");
-                        labelHonest.style.fontWeight = "bold";
-                        labelHonest.style.color = "var(--success-color)";
-                        labelDishonest.style.fontWeight = "normal";
-                        labelDishonest.style.color = "var(--text-muted)";
+                const width = 950;
+                const height = 550;
+
+                const svg = d3.select("#usaMapContainer")
+                    .append("svg")
+                    .attr("viewBox", `0 0 ${width} ${height}`)
+                    .style("width", "100%")
+                    .style("height", "100%");
+
+                const projection = d3.geoAlbersUsa()
+                    .scale(1100) 
+                    .translate([width / 2 - 50, height / 2]); 
+
+                const path = d3.geoPath().projection(projection);
+
+                d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(function(usData) {
+                    
+                    const states = topojson.feature(usData, usData.objects.states).features;
+
+                    states.forEach(d => {
+                        const centroid = path.centroid(d);
+                        let temp = 15; 
+                        if (!isNaN(centroid[1])) {
+                            temp = 10 + (centroid[1] / height) * 25;
+                            temp += (Math.random() - 0.5) * 5; 
+                            temp = Math.max(10, Math.min(35, temp));
+                        }
+                        d.properties.temp = temp;
+                    });
+
+                    function getHonestColor(temp) {
+                        const ratio = (temp - 10) / 25;
+                        const r1 = 254, g1 = 224, b1 = 210; 
+                        const r2 = 222, g2 = 45,  b2 = 38;  
+                        const r = Math.round(r1 + ratio * (r2 - r1));
+                        const g = Math.round(g1 + ratio * (g2 - g1));
+                        const b = Math.round(b1 + ratio * (b2 - b1));
+                        return `rgb(${r}, ${g}, ${b})`;
                     }
+
+                    function getDishonestColor(temp) {
+                        const ratio = (temp - 10) / 25;
+                        if (ratio < 0.2) return '#0000cc';
+                        if (ratio < 0.4) return '#00ccff';
+                        if (ratio < 0.6) return '#00ffcc';
+                        if (ratio < 0.8) return '#ffff00';
+                        if (ratio < 0.9) return '#ff6600';
+                        return '#cc0000';
+                    }
+
+                    const paths = svg.append("g")
+                        .selectAll("path")
+                        .data(states)
+                        .enter()
+                        .append("path")
+                        .attr("d", path)
+                        .attr("stroke", "#ffffff")
+                        .attr("stroke-width", 1)
+                        .style("transition", "fill 0.5s ease");
+
+                    function updateColors() {
+                        const isRainbow = toggle.checked;
+                        
+                        paths.attr("fill", d => isRainbow ? getDishonestColor(d.properties.temp) : getHonestColor(d.properties.temp));
+                        legendBar.setAttribute("fill", isRainbow ? "url(#legDishonest)" : "url(#legHonest)");
+                        
+                        if (isRainbow) {
+                            labelDishonest.style.fontWeight = "bold";
+                            labelDishonest.style.color = "var(--danger-color)";
+                            labelHonest.style.fontWeight = "normal";
+                            labelHonest.style.color = "var(--text-muted)";
+                        } else {
+                            labelHonest.style.fontWeight = "bold";
+                            labelHonest.style.color = "var(--success-color)";
+                            labelDishonest.style.fontWeight = "normal";
+                            labelDishonest.style.color = "var(--text-muted)";
+                        }
+                    }
+
+                    toggle.addEventListener('change', updateColors);
+                    updateColors();
                 });
             })();
 
