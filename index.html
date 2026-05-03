@@ -464,15 +464,14 @@
     </div>
 
     <div class="slide">
-        <h1>Visual Encoding Demo 1: Size (Area)</h1>
+        <h1>Visual Encoding Demo 1: Size</h1>
         <div class="flex-col-center">
-            <div class="demo-wrapper">
-                <svg class="demo-svg" viewBox="0 0 600 300">
-                    <circle cx="200" cy="150" r="80" fill="rgba(0, 85, 204, 0.6)" stroke="#0055cc" stroke-width="3" />
-                    <text x="200" y="260" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 1 (100%)</text>
-                    
-                    <circle id="svgCircleCompare" cx="450" cy="150" r="56.57" fill="rgba(255, 99, 132, 0.6)" stroke="#cc0000" stroke-width="3" style="transition: r 0.4s ease;" />
-                    <text x="450" y="260" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 2 (50% Drop)</text>
+            <div class="demo-wrapper" style="max-width: 650px;">
+                <svg class="demo-svg" viewBox="0 0 650 350">
+                    <circle cx="160" cy="150" r="60" fill="rgba(0, 85, 204, 0.6)" stroke="#0055cc" stroke-width="3" />
+                    <text x="160" y="330" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 1</text>
+                    <circle id="svgCircleCompare" cx="470" cy="150" r="84.85" fill="rgba(255, 99, 132, 0.6)" stroke="#cc0000" stroke-width="3" style="transition: r 0.4s ease;" />
+                    <text x="470" y="330" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#333">Year 2 (100% Increase)</text>
                 </svg>
             </div>
             
@@ -1132,9 +1131,13 @@
             // 7. VISUAL ENCODING (SIZE / AREA - TOGGLE)
             // ==========================================
             (function initSVGSizeArea() {
-                const baseRadius = 80;
-                const honestRadius = baseRadius * Math.sqrt(0.5); 
-                const dishonestRadius = baseRadius * 0.5; 
+                const baseRadius = 60;
+                
+                // Honest: Double the area. New r = baseRadius * sqrt(2)
+                const honestRadius = baseRadius * Math.sqrt(2); 
+                
+                // Dishonest: Double the 1D radius. Area becomes 4x larger.
+                const dishonestRadius = baseRadius * 2; 
 
                 const compareCircle = document.getElementById('svgCircleCompare');
                 const toggle = document.getElementById('svgSizeToggle');
