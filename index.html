@@ -186,8 +186,8 @@
             
             <div class="footnote">
                 NASA Goddard Institute for Space Studies (GISS). (2024). <em>Global Land-Ocean Temperature Index</em>.<br>
-                Retrieved from <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">https://data.giss.nasa.gov/gistemp/</a><br>
-                <span class="text-light"><em>Interactive chart created by the authors.</em></span>
+                Retrieved from <a href="https://data.giss.nasa.gov/gistemp/" target="_blank">https://data.giss.nasa.gov/gistemp/</a>. Interactive chart created by the authors.<br>
+                
             </div>
         </div>
     </div>
@@ -259,6 +259,7 @@
     <div class="slide">
         <h1>Underbinning Example</h1>
         <div class="flex-row-between">
+            <!-- LEFT -->
             <div class="col-text">
                 <ul>
                     <li>Distribution of NBA player heights.<sup>1</sup></li>
@@ -266,10 +267,17 @@
                     <li>Data grouped into coarse categories, true distribution is hidden.</li>
                 </ul>
             </div>
-            <div class="col-image">
+             <!-- RIGHT  -->
+            <div class="col-image" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
                 <img src="images/underbinning.png" alt="Underbinning Example" class="example-img">
-                <p class="caption">Chart recreated from original in Python by the authors.</p>
+                <p class="caption">Underbinning and Proper binning charts recreated from original in Python by the authors.</p>
             </div>
+
+             <div style="text-align: center;">
+                <img src="images/proper_binning.png" alt="Proper Binning Example" class="example-img">
+                
+            </div>
+
         </div>
         <div class="footnote footnote-left">
             <sup>1</sup> FlowingData. <em>Dishonest Charts</em>, from 
@@ -290,10 +298,11 @@
 
     <div class="slide">
         <h1>Axis Truncation Demo</h1>
-        <p class="subtext">Move the slider to truncate the y-axis. The data stays exactly the same.</p>
+        
 
         <div class="flex-col-center">
-            <svg id="axisSVG" width="500" height="300" style="margin-bottom: 2rem;">
+            <svg id="axisSVG" viewBox="0 0 500 300" 
+     style="width: 80%; max-width: 900px; height: auto; margin-bottom: 2rem;">
                 <line x1="80" y1="250" x2="450" y2="250" stroke="black"/>
                 <line x1="80" y1="50" x2="80" y2="250" stroke="black"/>
 
@@ -608,7 +617,7 @@
         <div class="flex-row-between">
             <div class="col-text">
                 <ul>
-                    <li><strong>Context:</strong> Apple Macworld Keynote (2008).<sup>1</sup></li>
+                    <li><strong>Context:</strong> Apple Macworld Keynote (2008),presented by Steve Jobs.<sup>1</sup></li>
                     <li><strong>Misuse:</strong> 3D tilt pushes the 19.5% slice into the middle.</li>
                     <li><strong>Effect:</strong> Perspective distortion makes 19.5% appear physically larger than 21.2%.</li>
                 </ul>
@@ -634,7 +643,7 @@
                     <li>Variance indicators.</li>
                 </ul>
             </li>
-            <li>Suggests absolute precision in data that actually estimates or forecasts.</li>
+            <li>Suggests absolute precision in data that actually estimates or forecasts where there is uncertainty.</li>
         </ul>
     </div>
 
@@ -1261,6 +1270,7 @@
             // ==========================================
             // 8. PERSPECTIVE DISTORTION
             // ==========================================
+
             const perspectiveData = [
                 { label: 'A', value: 21.2, color: '#5DADE2' },
                 { label: 'B', value: 19.5, color: '#F1948A' },
@@ -1291,34 +1301,116 @@
 
                 const cx = 360, cy = 180, rx = 150, ry = 150 - tilt, depth = tilt * 0.45;
 
+                // =========================
+                // SHADOW (ellipse)
+                // =========================
                 if (tilt > 0) {
-                    svg.appendChild(createSvgElement('ellipse', { cx: cx, cy: cy + depth, rx: rx, ry: ry, fill: '#777', opacity: '0.22' }));
+                    svg.appendChild(createSvgElement('ellipse', {
+                        cx: cx,
+                        cy: cy + depth,
+                        rx: rx,
+                        ry: ry,
+                        fill: '#000',
+                        opacity: '0.22'
+                    }));
                 }
 
-                // current angle changed to have the 19.5% appear at the bottom
+                // =========================
+                // PIE SLICES (TOP)
+                // =========================
                 let currentAngle = 68.58;
+
                 perspectiveData.forEach(slice => {
                     const sliceAngle = slice.value / 100 * 360;
                     const endAngle = currentAngle + sliceAngle;
 
-                    svg.appendChild(createSvgElement('path', { d: describeSlice(cx, cy, rx, ry, currentAngle, endAngle), fill: slice.color, stroke: '#ffffff', 'stroke-width': 2 }));
-
-                    const midAngle = currentAngle + sliceAngle / 2;
-                    const labelPosition = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
-                    const label = createSvgElement('text', { x: labelPosition.x, y: labelPosition.y, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': 18, 'font-weight': 'bold', fill: '#222' });
-                    label.textContent = `${slice.label}: ${slice.value}%`;
-                    svg.appendChild(label);
+                    svg.appendChild(createSvgElement('path', {
+                        d: describeSlice(cx, cy, rx, ry, currentAngle, endAngle),
+                        fill: slice.color,
+                        stroke: '#000',
+                        'stroke-width': 4,
+                        'stroke-linejoin': 'round'
+                    }));
 
                     currentAngle = endAngle;
                 });
 
-                const caption = createSvgElement('text', { x: 360, y: 380, 'text-anchor': 'middle', 'font-size': 16, fill: '#555' });
-                caption.textContent = tilt === 0 ? 'Honest 2D pie chart' : 'Tilted pie chart: same values, distorted appearance';
+                // =========================
+                // EXTEND WEDGE LINES INTO SHADOW
+                // =========================
+                if (tilt > 0) {
+                   let dividerAngle = 68.58;
+
+                    perspectiveData.forEach(slice => {
+                        const topPoint = polarToCartesian(cx, cy, rx, ry, dividerAngle);
+
+                        // only draw depth lines on the front half of the tilted pie
+                        if (topPoint.y > cy) {
+                            const bottomPoint = polarToCartesian(cx, cy + depth, rx, ry, dividerAngle);
+
+                            svg.appendChild(createSvgElement('line', {
+                                x1: topPoint.x,
+                                y1: topPoint.y,
+                                x2: bottomPoint.x,
+                                y2: bottomPoint.y,
+                                stroke: '#000',
+                                'stroke-width': 3,
+                                opacity: '0.7'
+                            }));
+                        }
+
+                        dividerAngle += slice.value / 100 * 360;
+                    });
+                                }
+
+                // =========================
+                // LABELS
+                // =========================
+                let labelAngle = 68.58;
+
+                perspectiveData.forEach(slice => {
+                    const sliceAngle = slice.value / 100 * 360;
+                    const midAngle = labelAngle + sliceAngle / 2;
+
+                    const labelPosition = polarToCartesian(cx, cy, rx * 0.62, ry * 0.62, midAngle);
+
+                    const label = createSvgElement('text', {
+                        x: labelPosition.x,
+                        y: labelPosition.y,
+                        'text-anchor': 'middle',
+                        'dominant-baseline': 'middle',
+                        'font-size': 18,
+                        'font-weight': 'bold',
+                        fill: '#222'
+                    });
+
+                    label.textContent = `${slice.label}: ${slice.value}%`;
+                    svg.appendChild(label);
+
+                    labelAngle += sliceAngle;
+                });
+
+                // =========================
+                // CAPTION
+                // =========================
+                const caption = createSvgElement('text', {
+                    x: 360,
+                    y: 380,
+                    'text-anchor': 'middle',
+                    'font-size': 16,
+                    fill: '#555'
+                });
+
+                caption.textContent = tilt === 0
+                    ? 'Honest 2D pie chart'
+                    : 'Tilted pie chart: same values, distorted appearance';
+
                 svg.appendChild(caption);
             }
 
             function initPerspectiveDistortionDemo() {
                 drawPerspectivePieSvg(0);
+
                 const slider = document.getElementById('tiltSlider');
                 const sliderValue = document.getElementById('tiltSliderValue');
                 const message = document.getElementById('perspectiveMessage');
@@ -1326,10 +1418,16 @@
                 slider.addEventListener('input', function () {
                     const tilt = Number(this.value);
                     sliderValue.innerText = tilt;
+
                     drawPerspectivePieSvg(tilt);
-                    if (tilt === 0) message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
-                    else if (tilt < 40) message.innerText = 'Moderate tilt: the chart starts to look three-dimensional.';
-                    else message.innerText = 'Strong tilt: perspective makes some slices appear visually more important than their values suggest.';
+
+                    if (tilt === 0) {
+                        message.innerText = 'No tilt: slices are easier to compare by their actual angle.';
+                    } else if (tilt < 40) {
+                        message.innerText = 'Moderate tilt: the chart starts to look three-dimensional.';
+                    } else {
+                        message.innerText = 'Strong tilt: perspective makes some slices appear visually more important than their values suggest.';
+                    }
                 });
             }
 
