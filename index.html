@@ -78,6 +78,7 @@
 </head>
 <body>
 
+ 
     <div class="slide cover" style="box-sizing: border-box; padding: 0 4rem;">
         <div style="text-align: center; margin-bottom: 8rem;">
             <h1>Dishonest Chart Techniques</h1>
@@ -95,20 +96,20 @@
         
     </div>
 
-    <div class="slide">
+    <section>
         <h1>Overview</h1>
         <ol class="list-large">
             <li>Background and Motivation</li>
             <li>Taxonomy of Dishonest Chart Techniques</li>
             <li>Related Work</li>
         </ol>
-    </div>
+    </section>
 
-    <div class="slide cover">
+    <section class="rslidy-sectionslide">
         <h1>Background and Motivation</h1>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Dishonest Charts</h1>
         <ul class="list-large">
             <li>Visualizations can convey a misleading impression.</li>
@@ -123,17 +124,17 @@
                 </ul>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide cover">
+    <section class="rslidy-sectionslide">
         <h1>Taxonomy of Dishonest Chart Techniques</h1>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>9 Dishonest Chart Techniques</h1>
-        <div class="flex-row-around">
-            <div class="col-half">
-                <ul>
+        <div class="rslidy-columns-even">
+          <div class="rslidy-column">
+            <ul class="rslidy-incremental">
                     <li>Cherry Picking</li>
                     <li>Underbinning</li>
                     <li>Axis Truncation</li>
@@ -141,8 +142,8 @@
                     <li>Oversmoothing</li>
                 </ul>
             </div>
-            <div class="col-half">
-                <ul>
+            <div class="rslidy-column">
+            <ul class="rslidy-incremental">
                     <li>Artificial Flattening or Steepening</li>
                     <li>Manipulating the Visual Encoding</li>
                     <li>Perspective Distortion</li>
@@ -150,9 +151,9 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Cherry Picking</h1>
         <ul class="list-large">
             <li>Selecting only specific data points, groups, or timeframes that support desired outcome.</li>
@@ -162,9 +163,9 @@
                 </ul>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Cherry Picking Demo</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper">
@@ -190,9 +191,9 @@
                 
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Cherry Picking Example</h1>
         <div class="flex-row-between">
             <div class="col-text">
@@ -212,9 +213,9 @@
             A 485-million-year history of Earth’s surface temperature. <em>Science</em>, <em>385</em>(6715).
             <a href="https://doi.org/10.1126/science.adk3705" target="_blank">https://doi.org/10.1126/science.adk3705</a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Underbinning</h1>
         <ul class="list-large">
             <li>Reducing number of bins (e.g., in histograms or heatmaps).</li>
@@ -227,9 +228,9 @@
                 </ul>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Underbinning Demo</h1>
         <p class="subtext">Reducing the number of bins obscures the <br> true distribution, hiding important clusters.</p>
 
@@ -254,9 +255,9 @@
 
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Underbinning Example</h1>
         <div class="flex-row-between">
             <!-- LEFT -->
@@ -285,18 +286,18 @@
                 https://flowingdata.com/projects/dishonest-charts/
             </a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Axis Truncation</h1>
         <ul class="list-large">
             <li>Truncating the baseline</li>
             <li>Chart where y-axis does not start at zero.</li>
             <li>Differences appear larger.</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Axis Truncation Demo</h1>
         
 
@@ -339,9 +340,9 @@
 
             <div class="footnote">Interactive SVG created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Axis Truncation Example</h1>
         <div class="flex-row-between">
             <div class="col-text">
@@ -360,9 +361,9 @@
             <sup>1</sup> Fox News Network. (2012, August 1). <em>If Bush tax cuts expire</em> [Television broadcast]. Media Matters for America.
             <a href="https://peoplesgdarchive.org/item/10481/if-bush-tax-cuts-expire-fox-news-infographic" target="_blank">https://peoplesgdarchive.org/item/10481/if-bush-tax-cuts-expire-fox-news-infographic</a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Artificial Flattening or Steepening</h1>
         <ul class="list-large">
             <li>Flattening chart's visual appearance:
@@ -372,9 +373,9 @@
                 </ul>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Artificial Flattening / Steepening Demo</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper">
@@ -399,16 +400,16 @@
             
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section >
         <h1>Time Gap</h1>
         <ul class="list-large">
             <li>Using uneven or irregular time intervals on continuous axis but spacing them evenly.</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section >
         <h1>Time Gap Demo</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper" style="height: 35vh;">
@@ -425,17 +426,17 @@
             
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Oversmoothing</h1>
         <ul class="list-large">
             <li>Applying aggressive smoothing algorithms or over-fitted curves to raw data points.</li>
             <li>Hides critical short-term fluctuations, volatility, or local extremes.</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Oversmoothing Demo</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper">
@@ -464,17 +465,17 @@
             </p>
             <div class="footnote">Interactive SVG created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Manipulating the Visual Encoding</h1>
         <ul class="list-large">
             <li>Manipulates choice of visual encoding.</li>
             <li>Often by misleading colour, size and shape (encoding).</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Visual Encoding Demo 1: Size</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper" style="max-width: 650px;">
@@ -498,9 +499,9 @@
             </div>
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Manipulating the Visual Encoding Example 1</h1>
         <div class="flex-row-between">
             <div class="col-text">
@@ -519,9 +520,9 @@
             <sup>1</sup> Time Magazine. (1990). <em>The Shrinking Family Doctor</em> [Data visualization]. InfoVis Wiki: The Lie Factor.
             Retrieved from <a href="https://infovis-wiki.net/wiki/Lie_Factor" target="_blank">https://infovis-wiki.net/wiki/Lie_Factor</a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Visual Encoding Demo 2: Color Mapping</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper" style="max-width: 950px; position: relative;">
@@ -559,9 +560,9 @@
             </div>
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Manipulating the Visual Encoding Example 2</h1>
         <div class="flex-row-between">
             <div class="col-half">
@@ -580,9 +581,9 @@
             <sup>1</sup> Smith, N., & van der Walt, S. (2015). <em>A better default colormap for Matplotlib</em>. Berkeley Institute for Data Science.
             Retrieved from <a href="https://bids.github.io/colormap/" target="_blank">https://bids.github.io/colormap/</a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Perspective Distortion</h1>
         <ul class="list-large">
             <li>Distorts the mathematical proportions of the data:
@@ -591,9 +592,9 @@
                 </ul>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Perspective Distortion Demo</h1>
         <div class="flex-col-center">
             <svg id="perspectivePieSvg" class="demo-svg" style="max-width: 45rem; margin-bottom: 1rem;" viewBox="0 0 720 420"></svg>
@@ -610,9 +611,9 @@
             </p>
             <div class="footnote">Interactive SVG chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Perspective Distortion Example</h1>
         <div class="flex-row-between">
             <div class="col-text">
@@ -631,9 +632,9 @@
             <sup>1</sup> Apple (2008, January 15). <em>Macworld San Francisco 2008 Keynote Address</em> [Presentation slide]. Macworld Conference & Expo.
             Retrieved from <a href="https://paragraft.wordpress.com/tag/infovis/" target="_blank">https://paragraft.wordpress.com/tag/infovis/</a>
         </div>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Concealing Uncertainty</h1>
         <ul class="list-large">
             <li>Not including:
@@ -645,9 +646,9 @@
             </li>
             <li>Suggests absolute precision in data that actually estimates or forecasts where there is uncertainty.</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section>
         <h1>Concealing Uncertainty Demo</h1>
         <div class="flex-col-center">
             <div class="demo-wrapper">
@@ -675,13 +676,13 @@
 
             <div class="footnote">Interactive chart created by the authors.</div>
         </div>
-    </div>
+    </section>
 
-    <div class="slide cover">
+    <section class="rslidy-sectionslide">
         <h1>Related Work</h1>
-    </div>
+    </section>
 
-    <div class="slide">
+    <section >
         <h1>Related Work</h1>
         <ul class="list-large">
             <li style="margin-bottom: 1.5rem;"><i>Awesome Misleading Visualizations</i>: Curated GitHub List.<br>
@@ -697,12 +698,11 @@
                 <a href="https://wwnorton.com/books/9781324001560" target="_blank" style="font-size: 0.8em; word-break: break-all;">https://wwnorton.com/books/9781324001560</a>
             </li>
         </ul>
-    </div>
+    </section>
 
-    <div class="slide cover">
+    <section class="rslidy-sectionslide">
         <h1>Questions?</h1>
-    </div>
-
+    </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
