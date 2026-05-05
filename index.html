@@ -264,9 +264,9 @@
 
     <section>
         <h1>Underbinning Example</h1>
-        <div class="flex-row-between">
             <!-- LEFT -->
-            <div class="col-text">
+            <div class="rslidy-columns-even">
+            <div class="rslidy-column">
                 <ul>
                     <li>Distribution of NBA player heights.<sup>1</sup></li>
                     <li>Too few bins (overly broad intervals).</li>
@@ -274,14 +274,20 @@
                 </ul>
             </div>
              <!-- RIGHT  -->
-            <div class="col-image" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-                <img src="images/underbinning.png" alt="Underbinning Example" class="example-img">
-                <p class="caption">Underbinning and Proper binning charts recreated from original in Python by the authors.</p>
-            </div>
-
-             <div style="text-align: center;">
-                <img src="images/proper_binning.png" alt="Proper Binning Example" class="example-img">
-                
+            <div class="rslidy-column">
+                <figure>
+                    <div class="rslidy-images">
+                    <img src="images/underbinning.svg" 
+                        alt="Underbinning Example">
+                    </div>
+                    <figcaption>Chart recreated from original in Python by the authors.</figcaption>
+                </figure>
+                <figure>
+                    <div class="rslidy-images">
+                    <img src="images/proper_binning.svg" 
+                        alt="Proper Binning Example">
+                    </div>
+                    <figcaption>Chart recreated from original in Python by the authors.</figcaption>
             </div>
 
         </div>
