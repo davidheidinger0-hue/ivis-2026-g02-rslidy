@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Axis Truncation Demo</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .flex-col-center { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; }
+    .demo-controls { max-width: 300px; width: 100%; margin-top: 1rem; text-align: center; }
+    .range-slider { width: 100%; cursor: pointer; margin-top: 0.5rem; }
+    .text-center { text-align: center; font-size: 1.2rem; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="flex-col-center">
+    <h2>Axis Truncation</h2>
+    <svg id="axisSVG" viewBox="0 0 500 300" style="width: 100%; height: auto;">
+      <line x1="80" y1="250" x2="450" y2="250" stroke="black" />
+      <line x1="80" y1="50" x2="80" y2="250" stroke="black" />
+      <line x1="75" y1="250" x2="80" y2="250" stroke="black" />
+      <line x1="75" y1="150" x2="80" y2="150" stroke="black" />
+      <line x1="75" y1="50" x2="80" y2="50" stroke="black" />
+      <text id="y0" x="70" y="254" text-anchor="end" font-size="12">0</text>
+      <text id="y50" x="70" y="154" text-anchor="end" font-size="12">50</text>
+      <text id="y100" x="70" y="54" text-anchor="end" font-size="12">100</text>
+      <rect id="barA" x="150" y="76" width="60" height="174" fill="#7dbce8" />
+      <rect id="barB" x="280" y="59" width="60" height="191" fill="#f28ca8" />
+      <text x="180" y="275" text-anchor="middle" font-size="14">Product A</text>
+      <text x="310" y="275" text-anchor="middle" font-size="14">Product B</text>
+      <text id="labelA" x="180" y="68" text-anchor="middle" font-size="13">100</text>
+      <text id="labelB" x="310" y="51" text-anchor="middle" font-size="13">110</text>
+      <text x="265" y="295" text-anchor="middle" font-size="12">Same values: 100 vs. 110</text>
+    </svg>
+    <div class="demo-controls">
+      <label style="font-size: 1.2rem;">Y-axis starts at: <span id="sliderValue" style="font-weight:bold;">0</span></label>
+      <input type="range" id="svgSlider" class="range-slider" min="0" max="95" value="0" step="5">
+    </div>
+    <p id="svgMessage" class="text-center">Full axis: the difference looks proportional.</p>
+  </div>
+  <script>
+    const svgSlider = document.getElementById('svgSlider'), barA = document.getElementById('barA'), barB = document.getElementById('barB'),
+          labelA = document.getElementById('labelA'), labelB = document.getElementById('labelB'), sliderValue = document.getElementById('sliderValue'),
+          message = document.getElementById('svgMessage'), y0 = document.getElementById('y0'), y50 = document.getElementById('y50'), y100 = document.getElementById('y100');
+    const chartHeight = 200, yMax = 115, baseY = 250;
+    
+    svgSlider.addEventListener('input', () => {
+      const yMin = Number(svgSlider.value), visibleRange = yMax - yMin;
+      sliderValue.textContent = yMin;
+      const heightA = ((100 - yMin) / visibleRange) * chartHeight, heightB = ((110 - yMin) / visibleRange) * chartHeight;
+      barA.setAttribute('y', baseY - heightA); barA.setAttribute('height', heightA);
+      barB.setAttribute('y', baseY - heightB); barB.setAttribute('height', heightB);
+      labelA.setAttribute('y', baseY - heightA - 8); labelB.setAttribute('y', baseY - heightB - 8);
+      y0.textContent = yMin; y50.textContent = Math.round(yMin + visibleRange / 2); y100.textContent = yMax;
+      message.textContent = yMin === 0 ? 'Full axis: the difference looks proportional.' : (yMin < 60 ? 'The y-axis is slightly truncated. The difference starts to look larger.' : 'The data is unchanged, but the difference now looks dramatically larger.');
+    });
+  </script>
+</body>
+</html>
