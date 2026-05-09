@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Oversmoothing Demo</title>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .flex-col-center { width: 100%; max-width: 850px; text-align: center; }
+    .demo-controls { max-width: 400px; margin: 1rem auto; width: 100%; }
+    .range-slider { width: 100%; cursor: pointer; margin-top: 1rem; }
+    .text-center { margin-top: 1rem; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="flex-col-center">
+    <h2>Oversmoothing</h2>
+    <svg id="oversmoothingSvg" viewBox="0 0 850 420" style="width:100%; height:auto;">
+      <line x1="70" y1="340" x2="800" y2="340" stroke="black" stroke-width="2" />
+      <line x1="70" y1="40" x2="70" y2="340" stroke="black" stroke-width="2" />
+      <text x="425" y="390" text-anchor="middle" font-size="16">Time</text>
+      <text x="20" y="190" text-anchor="middle" font-size="16" transform="rotate(-90 20 190)">Value</text>
+      <polyline id="rawLine" fill="none" stroke="rgba(120,120,120,0.6)" stroke-width="2" points="" />
+      <polyline id="smoothLine" fill="none" stroke="crimson" stroke-width="4" points="" />
+      <text id="oversmoothingTitle" x="425" y="25" text-anchor="middle" font-size="18" font-weight="bold">Raw data</text>
+    </svg>
+    <div class="demo-controls">
+      <label style="font-size: 1.2rem; font-weight:bold;">Smoothing window: <span id="smoothingSvgValue">1</span></label>
+      <input id="smoothingSvgSlider" class="range-slider" type="range" min="1" max="15" value="1" step="2">
+    </div>
+    <p id="oversmoothingSvgMessage" class="text-center">Low smoothing: short-term fluctuations are still visible.</p>
+  </div>
+  <script>
+    const svgRawData = [50,52,49,55,53,70,52,48,51,50,49,47,30,48,51,53,55,54,52,50,51,53,75,54,52,50,49,51,50,48,47,46,45,58,44,43,42,41,40,39];
+    function svgMovingAverage(data, window) {
+      if(window<=1) return data;
+      return data.map((v, i) => { const s = Math.max(0, i-Math.floor(window/2)), e = Math.min(data.length, i+Math.floor(window/2)+1), sub = data.slice(s,e); return sub.reduce((a,b)=>a+b,0)/sub.length; });
+    }
+    function dataToPoints(data) { return data.map((v, i) => `${70+(i/(data.length-1))*730},${340-((v-20)/60)*300}`).join(" "); }
+    
+    document.getElementById("rawLine").setAttribute("points", dataToPoints(svgRawData));
+    const smoothLine = document.getElementById("smoothLine"), slider = document.getElementById("smoothingSvgSlider"), valDisp = document.getElementById("smoothingSvgValue"), title = document.getElementById("oversmoothingTitle"), msg = document.getElementById("oversmoothingSvgMessage");
+    
+    slider.addEventListener("input", function() {
+      const w = Number(this.value); valDisp.innerText = w;
+      smoothLine.setAttribute("points", dataToPoints(svgMovingAverage(svgRawData, w)));
+      title.textContent = w<=3 ? "Low smoothing" : (w<=9 ? "Moderate smoothing" : "Oversmoothing");
+      msg.textContent = w<=3 ? "Low smoothing: short-term fluctuations are still visible." : (w<=9 ? "Moderate smoothing: fluctuations become less visible." : "High smoothing: spikes and drops almost disappear.");
+    });
+    slider.dispatchEvent(new Event('input'));
+  </script>
+</body>
+</html>
