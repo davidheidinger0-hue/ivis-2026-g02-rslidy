@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visual Encoding 2 (Color) Demo</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <style>
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .demo-wrapper { width: 100%; max-width: 950px; position: relative; }
+    #usaMapContainer { width: 100%; height: 550px; border-radius: 8px; background: #e0f3ff; overflow: hidden; }
+    .switch-container { display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: #888; margin-top: 1rem; }
+    .switch-label-left { width: 180px; text-align: right; } .switch-label-right { width: 180px; text-align: left; }
+    .switch { position: relative; display: inline-block; width: 60px; height: 34px; margin: 0 15px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: green; transition: .4s; border-radius: 34px; }
+    .slider-toggle:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider-toggle { background-color: #cc0000; }
+    input:checked + .slider-toggle:before { transform: translateX(26px); }
+  </style>
+</head>
+<body>
+  <h2>Visual Encoding: Color Palette</h2>
+  <div class="demo-wrapper">
+    <div id="usaMapContainer"></div>
+    <svg style="position: absolute; right: 20px; bottom: 20px; width: 120px; height: 350px; overflow: visible;">
+      <defs>
+        <linearGradient id="legHonest" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fee0d2" /><stop offset="100%" stop-color="#de2d26" /></linearGradient>
+        <linearGradient id="legDishonest" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0000cc" /><stop offset="20%" stop-color="#00ccff" /><stop offset="40%" stop-color="#00ffcc" /><stop offset="60%" stop-color="#ffff00" /><stop offset="80%" stop-color="#ff6600" /><stop offset="100%" stop-color="#cc0000" /></linearGradient>
+      </defs>
+      <rect id="legendBar" x="0" y="0" width="20" height="300" fill="url(#legHonest)" stroke="#333" />
+      <text x="30" y="12" font-weight="bold">10°C</text><text x="30" y="150">22°C</text><text x="30" y="300" font-weight="bold">35°C</text>
+    </svg>
+  </div>
+  <div class="switch-container">
+    <span id="colorLabelHonest" class="switch-label-left" style="font-weight:bold; color:green;">Sequential Palette</span>
+    <label class="switch"><input type="checkbox" id="svgColorToggle"><span class="slider-toggle"></span></label>
+    <span id="colorLabelDishonest" class="switch-label-right">Rainbow Palette</span>
+  </div>
+  <script>
+    const svg = d3.select("#usaMapContainer").append("svg").attr("viewBox", "0 0 950 550").style("width", "100%").style("height", "100%");
+    const projection = d3.geoAlbersUsa().scale(1100).translate([425, 275]);
+    const path = d3.geoPath().projection(projection);
+    d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(usData => {
+      const states = topojson.feature(usData, usData.objects.states).features;
+      states.forEach(d => { const c = path.centroid(d); d.properties.temp = isNaN(c[1]) ? 15 : Math.max(10, Math.min(35, 10 + (c[1]/550)*25 + (Math.random()-0.5)*5)); });
+      const paths = svg.append("g").selectAll("path").data(states).enter().append("path").attr("d", path).attr("stroke", "#fff").style("transition", "fill 0.5s ease");
+      
+      const toggle = document.getElementById('svgColorToggle');
+      function updateColors() {
+        paths.attr("fill", d => {
+          const r = (d.properties.temp - 10) / 25;
+          if (toggle.checked) return r<0.2?'#0000cc':r<0.4?'#00ccff':r<0.6?'#00ffcc':r<0.8?'#ffff00':r<0.9?'#ff6600':'#cc0000';
+          return `rgb(${Math.round(254+r*(222-254))},${Math.round(224+r*(45-224))},${Math.round(210+r*(38-210))})`;
+        });
+        document.getElementById('legendBar').setAttribute("fill", toggle.checked ? "url(#legDishonest)" : "url(#legHonest)");
+        document.getElementById('colorLabelDishonest').style.cssText = toggle.checked ? "font-weight:bold; color:#cc0000;" : "font-weight:normal; color:#888;";
+        document.getElementById('colorLabelHonest').style.cssText = !toggle.checked ? "font-weight:bold; color:green;" : "font-weight:normal; color:#888;";
+      }
+      toggle.addEventListener('change', updateColors); updateColors();
+    });
+  </script>
+</body>
+</html>
