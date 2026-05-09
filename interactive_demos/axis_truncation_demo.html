@@ -51,7 +51,7 @@
       barB.setAttribute('y', baseY - heightB); barB.setAttribute('height', heightB);
       labelA.setAttribute('y', baseY - heightA - 8); labelB.setAttribute('y', baseY - heightB - 8);
       y0.textContent = yMin; y50.textContent = Math.round(yMin + visibleRange / 2); y100.textContent = yMax;
-      message.textContent = yMin === 0 ? 'Full axis: the difference looks proportional.' : (yMin < 60 ? 'The y-axis is slightly truncated. The difference starts to look larger.' : 'The data is unchanged, but the difference now looks dramatically larger.');
+      message.textContent = yMin === 0 ? 'Full axis: the difference looks proportional.' : (yMin < 60 ? 'The y-axis is slightly truncated. The difference starts to look larger.' : 'The data is unchanged, but the difference now looks larger.');
     });
   </script>
 </body>
